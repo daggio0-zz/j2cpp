@@ -93,8 +93,8 @@ public class TypeInfo {
       return simpleDeclSpecifier;
     }
     javaDefaultValue = f.newLiteralExpression(IASTLiteralExpression.lk_integer_constant, "0");
-    JavaToCppConverter.hppStdIncludes.add("cstdint");
-    JavaToCppConverter.cppStdIncludes.add("cstdint");
+    // CompilationUnitInfo.hppStdIncludes.add("cstdint");
+    // CompilationUnitInfo.cppStdIncludes.add("cstdint");
     if (primitiveType.getPrimitiveTypeCode().equals(PrimitiveType.BYTE)) {
       return f.newTypedefNameSpecifier(f.newName("int8_t".toCharArray()));
     }
@@ -141,26 +141,26 @@ public class TypeInfo {
       }
       if (simpleName.getIdentifier().equals(Byte.class.getSimpleName())) {
         javaDefaultValue = f.newLiteralExpression(IASTLiteralExpression.lk_integer_constant, "0");
-        JavaToCppConverter.hppStdIncludes.add("cstdint");
-        JavaToCppConverter.cppStdIncludes.add("cstdint");
+        // CompilationUnitInfo.hppStdIncludes.add("cstdint");
+        // CompilationUnitInfo.cppStdIncludes.add("cstdint");
         return f.newTypedefNameSpecifier(f.newName("int8_t".toCharArray()));
       }
       if (simpleName.getIdentifier().equals(Short.class.getSimpleName())) {
         javaDefaultValue = f.newLiteralExpression(IASTLiteralExpression.lk_integer_constant, "0");
-        JavaToCppConverter.hppStdIncludes.add("cstdint");
-        JavaToCppConverter.cppStdIncludes.add("cstdint");
+        // CompilationUnitInfo.hppStdIncludes.add("cstdint");
+        // CompilationUnitInfo.cppStdIncludes.add("cstdint");
         return f.newTypedefNameSpecifier(f.newName("int16_t".toCharArray()));
       }
       if (simpleName.getIdentifier().equals(Integer.class.getSimpleName())) {
         javaDefaultValue = f.newLiteralExpression(IASTLiteralExpression.lk_integer_constant, "0");
-        JavaToCppConverter.hppStdIncludes.add("cstdint");
-        JavaToCppConverter.cppStdIncludes.add("cstdint");
+        // CompilationUnitInfo.hppStdIncludes.add("cstdint");
+        // CompilationUnitInfo.cppStdIncludes.add("cstdint");
         return f.newTypedefNameSpecifier(f.newName("int32_t".toCharArray()));
       }
       if (simpleName.getIdentifier().equals(Long.class.getSimpleName())) {
         javaDefaultValue = f.newLiteralExpression(IASTLiteralExpression.lk_integer_constant, "0");
-        JavaToCppConverter.hppStdIncludes.add("cstdint");
-        JavaToCppConverter.cppStdIncludes.add("cstdint");
+        // CompilationUnitInfo.hppStdIncludes.add("cstdint");
+        // CompilationUnitInfo.cppStdIncludes.add("cstdint");
         return f.newTypedefNameSpecifier(f.newName("int64_t".toCharArray()));
       }
     }
@@ -179,19 +179,19 @@ public class TypeInfo {
     // Here we can check if the parameterized type is a Java collection
     if (parameterizedTypeName.equals(Set.class.getSimpleName()) || //
         parameterizedTypeName.equals(HashSet.class.getSimpleName())) {
-      JavaToCppConverter.hppStdIncludes.add("set");
-      JavaToCppConverter.cppStdIncludes.add("set");
+      // CompilationUnitInfo.hppStdIncludes.add("set");
+      // CompilationUnitInfo.cppStdIncludes.add("set");
       parameterizedTypeName = "set";
     } else if (parameterizedTypeName.equals(List.class.getSimpleName()) || //
         parameterizedTypeName.equals(ArrayList.class.getSimpleName()) || //
         parameterizedTypeName.equals(LinkedList.class.getSimpleName())) {
-      JavaToCppConverter.hppStdIncludes.add("list");
-      JavaToCppConverter.cppStdIncludes.add("list");
+      // CompilationUnitInfo.hppStdIncludes.add("list");
+      // CompilationUnitInfo.cppStdIncludes.add("list");
       parameterizedTypeName = "list";
     } else if (parameterizedTypeName.equals(Map.class.getSimpleName()) || //
         parameterizedTypeName.equals(HashMap.class.getSimpleName())) {
-      JavaToCppConverter.hppStdIncludes.add("map");
-      JavaToCppConverter.cppStdIncludes.add("map");
+      // CompilationUnitInfo.hppStdIncludes.add("map");
+      // CompilationUnitInfo.cppStdIncludes.add("map");
       parameterizedTypeName = "map";
     }
 

@@ -25,32 +25,22 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
  * Date: 21/06/12
  * Time: 00:25
  */
-public class JavaToCppConverter {
+public class CompilationUnitInfo {
   private static final CPPNodeFactory f = CPPNodeFactory.getDefault();
-  private final CompilationUnit java;
   private final CPPASTTranslationUnit hpp = new CPPASTTranslationUnit();
-  private CPPASTTranslationUnit cpp = new CPPASTTranslationUnit();
-  public static final Set<String> hppIncludes = new HashSet<String>();
-  public static final Set<String> hppStdIncludes = new HashSet<String>();
-  public static final Set<String> cppIncludes = new HashSet<String>();
-  public static final Set<String> cppStdIncludes = new HashSet<String>();
+  private final CPPASTTranslationUnit cpp = new CPPASTTranslationUnit();
+  public final Set<String> hppIncludes = new HashSet<String>();
+  public final Set<String> hppStdIncludes = new HashSet<String>();
+  public final Set<String> cppIncludes = new HashSet<String>();
+  public final Set<String> cppStdIncludes = new HashSet<String>();
 
-  public JavaToCppConverter(final CompilationUnit java) {
-    this.java = java;
-  }
-
-  public void convert() {
-    hppIncludes.clear();
-    hppStdIncludes.clear();
-    cppIncludes.clear();
-    cppStdIncludes.clear();
-
+  public CompilationUnitInfo(final CompilationUnit compilationUnit) {
     // Only handle one class per AST
-    if (java.types().size() != 1) {
+    if (compilationUnit.types().size() != 1) {
       throw new IllegalArgumentException("Multiple type declaration per compilation unit not supported");
     }
 
-    for (final Object importObject : java.imports()) {
+    for (final Object importObject : compilationUnit.imports()) {
       final ImportDeclaration importDeclaration = (ImportDeclaration) importObject;
       if (importDeclaration.isStatic()) {
         continue;
@@ -85,7 +75,7 @@ public class JavaToCppConverter {
     // }
 
     // Determine the type
-    final AbstractTypeDeclaration type = (AbstractTypeDeclaration) java.types().iterator().next();
+    final AbstractTypeDeclaration type = (AbstractTypeDeclaration) compilationUnit.types().iterator().next();
     if (type instanceof TypeDeclaration) {
       // for (Object importObject : java.imports()) {
       // ImportDeclaration importDeclaration = (ImportDeclaration) importObject;
@@ -118,7 +108,6 @@ public class JavaToCppConverter {
     } else if (type instanceof EnumDeclaration) {
       final EnumDeclarationInfo enumDeclarationInfo = new EnumDeclarationInfo((EnumDeclaration) type);
       hpp.addDeclaration(buildEnumDeclaration(enumDeclarationInfo));
-      cpp = null;
       // } else if (type instanceof AnnotationTypeDeclaration) {
     } else {
       throw new UnsupportedOperationException("Unsupported type declaration " + type.getClass().getName());

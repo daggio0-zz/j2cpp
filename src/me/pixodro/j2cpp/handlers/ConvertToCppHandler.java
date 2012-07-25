@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import me.pixodro.j2cpp.core.JavaToCppConverter;
+import me.pixodro.j2cpp.core.CompilationUnitInfo;
 
 import org.eclipse.cdt.internal.core.dom.rewrite.astwriter.ASTWriter;
 import org.eclipse.core.commands.AbstractHandler;
@@ -39,12 +39,11 @@ public class ConvertToCppHandler extends AbstractHandler {
   class Requestor extends ASTRequestor {
 
     @Override
-    public void acceptAST(final ICompilationUnit source, final CompilationUnit ast) {
-      super.acceptAST(source, ast);
+    public void acceptAST(final ICompilationUnit source, final CompilationUnit compilationUnit) {
+      super.acceptAST(source, compilationUnit);
       try {
         System.out.println("Converting = " + source);
-        final JavaToCppConverter converter = new JavaToCppConverter(ast);
-        converter.convert();
+        final CompilationUnitInfo compilationUnitInfo = new CompilationUnitInfo(compilationUnit);
 
         final IFolder folder = source.getJavaProject().getProject().getFolder("out");
         if (!folder.exists()) {
@@ -60,40 +59,38 @@ public class ConvertToCppHandler extends AbstractHandler {
           final StringBuffer output = new StringBuffer();
           output.append("#ifndef __").append(baseName).append("_H_\n");
           output.append("#define __").append(baseName).append("_H_\n");
-          for (final String include : JavaToCppConverter.hppStdIncludes) {
-            output.append("#include <").append(include).append(">\n");
-          }
-          for (final String include : JavaToCppConverter.hppIncludes) {
-            output.append("#include \"").append(include).append(".h\"\n");
-          }
-          if (!JavaToCppConverter.hppStdIncludes.isEmpty()) {
-            output.append("using namespace std;\n");
-          }
-          output.append(writer.write(converter.getHpp()));
+          // for (final String include : CompilationUnitInfo.hppStdIncludes) {
+          // output.append("#include <").append(include).append(">\n");
+          // }
+          // for (final String include : CompilationUnitInfo.hppIncludes) {
+          // output.append("#include \"").append(include).append(".h\"\n");
+          // }
+          // if (!CompilationUnitInfo.hppStdIncludes.isEmpty()) {
+          // output.append("using namespace std;\n");
+          // }
+          output.append(writer.write(compilationUnitInfo.getHpp()));
           output.append("#endif //__").append(baseName).append("_H_\n");
           final InputStream stream = new ByteArrayInputStream(output.toString().getBytes());
           headerFile.create(stream, IResource.FORCE, null);
         }
 
-        if (converter.getCpp() != null) {
-          final IFile compilationUnitFile = folder.getFile(baseName + ".cpp");
-          if (!compilationUnitFile.exists()) {
-            final ASTWriter writer = new ASTWriter();
-            final StringBuffer output = new StringBuffer();
-            for (final String include : JavaToCppConverter.cppStdIncludes) {
-              output.append("#include <").append(include).append(">\n");
-            }
-            for (final String include : JavaToCppConverter.cppIncludes) {
-              output.append("#include \"").append(include).append(".h\"\n");
-            }
-            output.append("#include \"").append(baseName).append(".h\"\n");
-            if (!JavaToCppConverter.cppStdIncludes.isEmpty()) {
-              output.append("using namespace std;\n");
-            }
-            output.append(writer.write(converter.getCpp()));
-            final InputStream stream = new ByteArrayInputStream(output.toString().getBytes());
-            compilationUnitFile.create(stream, IResource.FORCE, null);
-          }
+        final IFile compilationUnitFile = folder.getFile(baseName + ".cpp");
+        if (!compilationUnitFile.exists()) {
+          final ASTWriter writer = new ASTWriter();
+          final StringBuffer output = new StringBuffer();
+          // for (final String include : CompilationUnitInfo.cppStdIncludes) {
+          // output.append("#include <").append(include).append(">\n");
+          // }
+          // for (final String include : CompilationUnitInfo.cppIncludes) {
+          // output.append("#include \"").append(include).append(".h\"\n");
+          // }
+          // output.append("#include \"").append(baseName).append(".h\"\n");
+          // if (!CompilationUnitInfo.cppStdIncludes.isEmpty()) {
+          // output.append("using namespace std;\n");
+          // }
+          output.append(writer.write(compilationUnitInfo.getCpp()));
+          final InputStream stream = new ByteArrayInputStream(output.toString().getBytes());
+          compilationUnitFile.create(stream, IResource.FORCE, null);
         }
       } catch (final Exception e) {
         // TODO Auto-generated catch block
