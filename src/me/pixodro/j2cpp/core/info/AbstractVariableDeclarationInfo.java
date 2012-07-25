@@ -22,20 +22,21 @@ abstract public class AbstractVariableDeclarationInfo {
 
   private final IASTSimpleDeclaration declaration;
 
-  private CompilationUnitInfo compilationUnitInfo;
+  private final CompilationUnitInfo compilationUnitInfo;
 
   public AbstractVariableDeclarationInfo(final VariableDeclarationStatement variableDeclarationStatement, final CompilationUnitInfo compilationUnitInfo) {
+    this.compilationUnitInfo = compilationUnitInfo;
     final VariableDeclarationWrapper wrapper = new VariableDeclarationWrapper(variableDeclarationStatement);
-    declaration = convertWrapper(wrapper, compilationUnitInfo);
+    declaration = convertWrapper(wrapper);
   }
 
   public AbstractVariableDeclarationInfo(final VariableDeclarationExpression variableDeclarationExpression, final CompilationUnitInfo compilationUnitInfo) {
+    this.compilationUnitInfo = compilationUnitInfo;
     final VariableDeclarationWrapper wrapper = new VariableDeclarationWrapper(variableDeclarationExpression);
-    declaration = convertWrapper(wrapper, compilationUnitInfo);
+    declaration = convertWrapper(wrapper);
   }
 
-  private IASTSimpleDeclaration convertWrapper(final VariableDeclarationWrapper wrapper, final CompilationUnitInfo compilationUnitInfo) {
-    this.compilationUnitInfo = compilationUnitInfo;
+  private IASTSimpleDeclaration convertWrapper(final VariableDeclarationWrapper wrapper) {
     final ModifiersInfo modifiers = new ModifiersInfo(wrapper.modifiers());
     final TypeInfo typeInfo = new TypeInfo(wrapper.getType(), compilationUnitInfo);
 

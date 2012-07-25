@@ -73,10 +73,9 @@ public class ConvertToCppHandler extends AbstractHandler {
       folder.create(IResource.FORCE, true, null);
 
       converter.generateTo(folder);
-
     } catch (final Exception e) {
       e.printStackTrace();
-      throw new ExecutionException(e.getMessage());
+      // throw new ExecutionException(e.getMessage());
     }
 
     return null;
