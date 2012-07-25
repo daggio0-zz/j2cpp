@@ -1,4 +1,4 @@
-package me.pixodro.j2cpp.core;
+package me.pixodro.j2cpp.core.info;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,4 +63,10 @@ public class NameInfo {
     }
     return tokens;
   }
+
+  public String getNameAsString() {
+    final List<String> tokens = tokenize();
+    return tokens.get(tokens.size() - 1);
+  }
+
 }

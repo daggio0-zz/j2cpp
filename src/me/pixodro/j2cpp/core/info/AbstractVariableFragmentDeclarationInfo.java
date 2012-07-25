@@ -1,4 +1,4 @@
-package me.pixodro.j2cpp.core;
+package me.pixodro.j2cpp.core.info;
 
 import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;

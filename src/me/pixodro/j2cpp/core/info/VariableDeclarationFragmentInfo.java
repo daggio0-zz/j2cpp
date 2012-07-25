@@ -1,4 +1,4 @@
-package me.pixodro.j2cpp.core;
+package me.pixodro.j2cpp.core.info;
 
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.VariableDeclaration;

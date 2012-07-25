@@ -1,4 +1,4 @@
-package me.pixodro.j2cpp.core;
+package me.pixodro.j2cpp.core.info;
 
 import java.util.HashSet;
 import java.util.List;
@@ -33,6 +33,7 @@ public class CompilationUnitInfo {
   public final Set<String> hppStdIncludes = new HashSet<String>();
   public final Set<String> cppIncludes = new HashSet<String>();
   public final Set<String> cppStdIncludes = new HashSet<String>();
+  private final String name;
 
   public CompilationUnitInfo(final CompilationUnit compilationUnit) {
     // Only handle one class per AST
@@ -77,6 +78,7 @@ public class CompilationUnitInfo {
     // Determine the type
     final AbstractTypeDeclaration type = (AbstractTypeDeclaration) compilationUnit.types().iterator().next();
     if (type instanceof TypeDeclaration) {
+      name = new NameInfo(((TypeDeclaration) type).getName()).getNameAsString();
       // for (Object importObject : java.imports()) {
       // ImportDeclaration importDeclaration = (ImportDeclaration) importObject;
       // if (importDeclaration.isStatic()) {
@@ -106,6 +108,7 @@ public class CompilationUnitInfo {
       // CPP File
       buildTypeDefinition(cpp, typeDeclarationInfo);
     } else if (type instanceof EnumDeclaration) {
+      name = new NameInfo(((EnumDeclaration) type).getName()).getNameAsString();
       final EnumDeclarationInfo enumDeclarationInfo = new EnumDeclarationInfo((EnumDeclaration) type);
       hpp.addDeclaration(buildEnumDeclaration(enumDeclarationInfo));
       // } else if (type instanceof AnnotationTypeDeclaration) {
@@ -265,5 +268,9 @@ public class CompilationUnitInfo {
 
   public CPPASTTranslationUnit getCpp() {
     return cpp;
+  }
+
+  public String getName() {
+    return name;
   }
 }
