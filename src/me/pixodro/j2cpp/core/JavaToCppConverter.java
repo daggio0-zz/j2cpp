@@ -148,20 +148,21 @@ public class JavaToCppConverter {
       final SimpleType simpleBaseType = (SimpleType) baseType;
       compositeTypeSpecifier.addBaseSpecifier(f.newBaseSpecifier(new NameInfo(simpleBaseType.getName()).getName(), 0, false));
     }
-    compositeTypeSpecifier.addDeclaration(f.newVisibilityLabel(ICPPASTVisibilityLabel.v_public));
+
+    compositeTypeSpecifier.addDeclaration(f.newVisibilityLabel(ICPPASTVisibilityLabel.v_private));
     for (final TypeDeclarationInfo subType : typeDeclarationInfo.subTypes()) {
-      if (subType.getModifiers().isPublic) {
+      if (subType.getModifiers().isPrivate) {
         compositeTypeSpecifier.addDeclaration(buildTypeDeclaration(subType));
       }
     }
     for (final FieldDeclarationInfo field : typeDeclarationInfo.fields()) {
-      if (field.getModifiers().isPublic) {
+      if (field.getModifiers().isPrivate) {
         compositeTypeSpecifier.addDeclaration(field.getDeclaration());
         typeDeclarationInfo.orderedFields.add(field);
       }
     }
     for (final MethodDeclarationInfo method : typeDeclarationInfo.methods()) {
-      if (method.getModifiers().isPublic) {
+      if (method.getModifiers().isPrivate) {
         compositeTypeSpecifier.addDeclaration(method.getDeclaration());
       }
     }
@@ -184,20 +185,20 @@ public class JavaToCppConverter {
       }
     }
 
-    compositeTypeSpecifier.addDeclaration(f.newVisibilityLabel(ICPPASTVisibilityLabel.v_private));
+    compositeTypeSpecifier.addDeclaration(f.newVisibilityLabel(ICPPASTVisibilityLabel.v_public));
     for (final TypeDeclarationInfo subType : typeDeclarationInfo.subTypes()) {
-      if (subType.getModifiers().isPrivate) {
+      if (subType.getModifiers().isPublic) {
         compositeTypeSpecifier.addDeclaration(buildTypeDeclaration(subType));
       }
     }
     for (final FieldDeclarationInfo field : typeDeclarationInfo.fields()) {
-      if (field.getModifiers().isPrivate) {
+      if (field.getModifiers().isPublic) {
         compositeTypeSpecifier.addDeclaration(field.getDeclaration());
         typeDeclarationInfo.orderedFields.add(field);
       }
     }
     for (final MethodDeclarationInfo method : typeDeclarationInfo.methods()) {
-      if (method.getModifiers().isPrivate) {
+      if (method.getModifiers().isPublic) {
         compositeTypeSpecifier.addDeclaration(method.getDeclaration());
       }
     }
