@@ -123,7 +123,7 @@ public class ConvertToCppHandler extends AbstractHandler {
   public Object execute(final ExecutionEvent event) throws ExecutionException {
     try {
       final IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
-      final IStructuredSelection selection = (IStructuredSelection) window.getSelectionService().getSelection("org.eclipse.jdt.ui.PackageExplorer");
+      final IStructuredSelection selection = (IStructuredSelection) window.getSelectionService().getSelection();
       final IPackageFragmentRoot fragmentRoot = (IPackageFragmentRoot) selection.getFirstElement();
 
       final ASTParser parser = ASTParser.newParser(AST.JLS4);
@@ -149,6 +149,7 @@ public class ConvertToCppHandler extends AbstractHandler {
 
       parser.createASTs(compilationUnits.toArray(new ICompilationUnit[compilationUnits.size()]), new String[0], new Requestor(), new NullProgressMonitor());
     } catch (final Exception e) {
+      e.printStackTrace();
       throw new ExecutionException(e.getMessage());
     }
 
