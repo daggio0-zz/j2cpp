@@ -23,8 +23,9 @@ public class FieldDeclarationInfo {
   private final ModifiersInfo modifiers;
   private TypeInfo typeInfo;
   private final Map<IASTName, IASTExpression> fragments = new HashMap<IASTName, IASTExpression>();
-
   private final FieldDeclaration fieldDeclaration;
+
+  private CompilationUnitInfo compilationUnitInfo;
 
   public FieldDeclarationInfo(final IASTSimpleDeclaration declaration, final ModifiersInfo modifiers) {
     this.declaration = declaration;
@@ -32,10 +33,11 @@ public class FieldDeclarationInfo {
     fieldDeclaration = null;
   }
 
-  public FieldDeclarationInfo(final FieldDeclaration fieldDeclaration) {
+  public FieldDeclarationInfo(final FieldDeclaration fieldDeclaration, final CompilationUnitInfo compilationUnitInfo) {
     this.fieldDeclaration = fieldDeclaration;
+    this.compilationUnitInfo = compilationUnitInfo;
     modifiers = new ModifiersInfo(fieldDeclaration.modifiers());
-    typeInfo = new TypeInfo(fieldDeclaration.getType());
+    typeInfo = new TypeInfo(fieldDeclaration.getType(), compilationUnitInfo);
 
     final IASTDeclSpecifier declSpecifier = typeInfo.getDeclSpecifier();
     declaration = convertFragments(declSpecifier);
@@ -53,7 +55,7 @@ public class FieldDeclarationInfo {
     final IASTSimpleDeclaration simpleDeclaration = f.newSimpleDeclaration(declSpecifier);
     for (final Object fragmentObject : fieldDeclaration.fragments()) {
       final VariableDeclarationFragment fragment = (VariableDeclarationFragment) fragmentObject;
-      final VariableDeclarationFragmentInfo fragmentInfo = new VariableDeclarationFragmentInfo(fragment, fieldDeclaration.getType());
+      final VariableDeclarationFragmentInfo fragmentInfo = new VariableDeclarationFragmentInfo(fragment, fieldDeclaration.getType(), compilationUnitInfo);
       fragments.put(new NameInfo(fragment.getName()).getName(), fragmentInfo.initializer);
       if (fragmentInfo.getDeclarator().getInitializer() == null) {
         fragmentInfo.getDeclarator().setInitializer(f.newEqualsInitializer(typeInfo.getJavaDefaultValue()));

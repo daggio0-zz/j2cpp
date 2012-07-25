@@ -10,8 +10,8 @@ public class FunctionDeclarationInfo extends AbstractFunctionInfo {
   private static final CPPNodeFactory f = CPPNodeFactory.getDefault();
   private final IASTSimpleDeclaration declaration;
 
-  public FunctionDeclarationInfo(final MethodDeclaration methodDeclaration, final TypeDeclaration typeDeclaration, final TypeDeclarationInfo enclosingType) {
-    super(methodDeclaration, enclosingType);
+  public FunctionDeclarationInfo(final MethodDeclaration methodDeclaration, final TypeDeclaration typeDeclaration, final TypeDeclarationInfo enclosingType, final CompilationUnitInfo compilationUnitInfo) {
+    super(methodDeclaration, enclosingType, compilationUnitInfo);
 
     functionDeclarator.setName(new NameInfo(methodDeclaration.getName()).getName());
 

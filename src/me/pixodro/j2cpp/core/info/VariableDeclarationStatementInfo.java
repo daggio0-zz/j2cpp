@@ -10,7 +10,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
  * To change this template use File | Settings | File Templates.
  */
 public class VariableDeclarationStatementInfo extends AbstractVariableDeclarationInfo {
-  public VariableDeclarationStatementInfo(final VariableDeclarationStatement variableDeclarationStatement) {
-    super(variableDeclarationStatement);
+  public VariableDeclarationStatementInfo(final VariableDeclarationStatement variableDeclarationStatement, final CompilationUnitInfo compilationUnitInfo) {
+    super(variableDeclarationStatement, compilationUnitInfo);
   }
 }

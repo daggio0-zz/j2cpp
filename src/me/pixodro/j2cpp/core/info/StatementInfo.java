@@ -55,8 +55,11 @@ public class StatementInfo {
   private IASTStatement statement;
   private final TypeDeclaration typeDeclaration;
 
-  public StatementInfo(final Statement javaStatement, final TypeDeclaration typeDeclaration) {
+  private final CompilationUnitInfo compilationUnitInfo;
+
+  public StatementInfo(final Statement javaStatement, final TypeDeclaration typeDeclaration, final CompilationUnitInfo compilationUnitInfo) {
     this.typeDeclaration = typeDeclaration;
+    this.compilationUnitInfo = compilationUnitInfo;
     if (javaStatement instanceof Block) {
       statement = convertBlock((Block) javaStatement);
     } else if (javaStatement instanceof ExpressionStatement) {
@@ -100,10 +103,10 @@ public class StatementInfo {
   }
 
   private IASTStatement convertConstructorInvocation(final ConstructorInvocation constructorInvocation) {
-    final IASTExpression call = new ExpressionInfo(typeDeclaration.getName(), typeDeclaration).getExpression();
+    final IASTExpression call = new ExpressionInfo(typeDeclaration.getName(), typeDeclaration, compilationUnitInfo).getExpression();
     final List<IASTInitializerClause> initializerClauses = new ArrayList<IASTInitializerClause>();
     for (final Object argumentObject : constructorInvocation.arguments()) {
-      final ExpressionInfo argument = new ExpressionInfo((Expression) argumentObject, typeDeclaration);
+      final ExpressionInfo argument = new ExpressionInfo((Expression) argumentObject, typeDeclaration, compilationUnitInfo);
       initializerClauses.add(argument.getExpression());
     }
     return f.newExpressionStatement(f.newFunctionCallExpression(call, initializerClauses.toArray(new IASTInitializerClause[initializerClauses.size()])));
@@ -112,7 +115,7 @@ public class StatementInfo {
   private IASTStatement convertEnhancedForStatement(final EnhancedForStatement enhancedForStatement) {
     final ICPPASTRangeBasedForStatement rangeBased = f.newRangeBasedForStatement();
 
-    final SingleVariableDeclarationInfo parameter = new SingleVariableDeclarationInfo(enhancedForStatement.getParameter());
+    final SingleVariableDeclarationInfo parameter = new SingleVariableDeclarationInfo(enhancedForStatement.getParameter(), compilationUnitInfo);
 
     final ICPPASTSimpleDeclSpecifier declSpecifier = f.newSimpleDeclSpecifier();
     declSpecifier.setStorageClass(IASTDeclSpecifier.sc_auto);
@@ -124,47 +127,47 @@ public class StatementInfo {
 
     rangeBased.setDeclaration(declaration);
 
-    final ExpressionInfo expressionInfo = new ExpressionInfo(enhancedForStatement.getExpression(), typeDeclaration);
+    final ExpressionInfo expressionInfo = new ExpressionInfo(enhancedForStatement.getExpression(), typeDeclaration, compilationUnitInfo);
     rangeBased.setInitializerClause(expressionInfo.getExpression());
 
-    final StatementInfo body = new StatementInfo(enhancedForStatement.getBody(), typeDeclaration);
+    final StatementInfo body = new StatementInfo(enhancedForStatement.getBody(), typeDeclaration, compilationUnitInfo);
     rangeBased.setBody(body.getStatement());
     return rangeBased;
   }
 
   private IASTStatement convertVariableDeclarationStatement(final VariableDeclarationStatement variableDeclarationStatement) {
-    final VariableDeclarationStatementInfo statementInfo = new VariableDeclarationStatementInfo(variableDeclarationStatement);
+    final VariableDeclarationStatementInfo statementInfo = new VariableDeclarationStatementInfo(variableDeclarationStatement, compilationUnitInfo);
     final IASTDeclarationStatement delcarationStatement = f.newDeclarationStatement(statementInfo.getDeclaration());
     return delcarationStatement;
   }
 
   private IASTStatement convertReturnStatement(final ReturnStatement returnStatement) {
-    return returnStatement.getExpression() == null ? f.newReturnStatement(null) : f.newReturnStatement(new ExpressionInfo(returnStatement.getExpression(), typeDeclaration).getExpression());
+    return returnStatement.getExpression() == null ? f.newReturnStatement(null) : f.newReturnStatement(new ExpressionInfo(returnStatement.getExpression(), typeDeclaration, compilationUnitInfo).getExpression());
   }
 
   private IASTStatement convertSwitchCase(final SwitchCase switchCase) {
-    return switchCase.getExpression() == null ? f.newDefaultStatement() : f.newCaseStatement(new ExpressionInfo(switchCase.getExpression(), typeDeclaration).getExpression());
+    return switchCase.getExpression() == null ? f.newDefaultStatement() : f.newCaseStatement(new ExpressionInfo(switchCase.getExpression(), typeDeclaration, compilationUnitInfo).getExpression());
   }
 
   private IASTStatement convertSwitchStatement(final SwitchStatement switchStatement) {
-    final ExpressionInfo controller = new ExpressionInfo(switchStatement.getExpression(), typeDeclaration);
+    final ExpressionInfo controller = new ExpressionInfo(switchStatement.getExpression(), typeDeclaration, compilationUnitInfo);
     final IASTCompoundStatement body = f.newCompoundStatement();
     for (final Object statementObject : switchStatement.statements()) {
-      final StatementInfo statementInfo = new StatementInfo((Statement) statementObject, typeDeclaration);
+      final StatementInfo statementInfo = new StatementInfo((Statement) statementObject, typeDeclaration, compilationUnitInfo);
       body.addStatement(statementInfo.getStatement());
     }
     return f.newSwitchStatement(controller.getExpression(), body);
   }
 
   private IASTStatement convertDoStatement(final DoStatement doStatement) {
-    final ExpressionInfo condition = new ExpressionInfo(doStatement.getExpression(), typeDeclaration);
-    final StatementInfo body = new StatementInfo(doStatement.getBody(), typeDeclaration);
+    final ExpressionInfo condition = new ExpressionInfo(doStatement.getExpression(), typeDeclaration, compilationUnitInfo);
+    final StatementInfo body = new StatementInfo(doStatement.getBody(), typeDeclaration, compilationUnitInfo);
     return f.newDoStatement(body.getStatement(), condition.getExpression());
   }
 
   private IASTStatement convertWhileStatement(final WhileStatement whileStatement) {
-    final ExpressionInfo condition = new ExpressionInfo(whileStatement.getExpression(), typeDeclaration);
-    final StatementInfo body = new StatementInfo(whileStatement.getBody(), typeDeclaration);
+    final ExpressionInfo condition = new ExpressionInfo(whileStatement.getExpression(), typeDeclaration, compilationUnitInfo);
+    final StatementInfo body = new StatementInfo(whileStatement.getBody(), typeDeclaration, compilationUnitInfo);
     return f.newWhileStatement(condition.getExpression(), body.getStatement());
   }
 
@@ -173,12 +176,12 @@ public class StatementInfo {
     if (forStatement.initializers().isEmpty()) {
       init = f.newDefaultStatement();
     } else {
-      final VariableDeclarationExpressionInfo initExpression = new VariableDeclarationExpressionInfo((VariableDeclarationExpression) forStatement.initializers().get(0));
+      final VariableDeclarationExpressionInfo initExpression = new VariableDeclarationExpressionInfo((VariableDeclarationExpression) forStatement.initializers().get(0), compilationUnitInfo);
       final IASTDeclarationStatement declarationStatement = f.newDeclarationStatement(initExpression.getDeclaration());
       init = declarationStatement;
     }
 
-    final ExpressionInfo condition = new ExpressionInfo(forStatement.getExpression(), typeDeclaration);
+    final ExpressionInfo condition = new ExpressionInfo(forStatement.getExpression(), typeDeclaration, compilationUnitInfo);
 
     IASTExpression iterationExpression;
     if (forStatement.updaters().isEmpty()) {
@@ -186,32 +189,32 @@ public class StatementInfo {
     } else {
       final ICPPASTExpressionList expressionList = f.newExpressionList();
       for (final Object updaterObject : forStatement.updaters()) {
-        final IASTExpression updater = new ExpressionInfo((Expression) updaterObject, typeDeclaration).getExpression();
+        final IASTExpression updater = new ExpressionInfo((Expression) updaterObject, typeDeclaration, compilationUnitInfo).getExpression();
         expressionList.addExpression(updater);
       }
       iterationExpression = expressionList;
     }
 
-    final StatementInfo body = new StatementInfo(forStatement.getBody(), typeDeclaration);
+    final StatementInfo body = new StatementInfo(forStatement.getBody(), typeDeclaration, compilationUnitInfo);
 
     return f.newForStatement(init, condition.getExpression(), iterationExpression, body.getStatement());
   }
 
   private IASTStatement convertIfStatement(final IfStatement ifStatement) {
-    final ExpressionInfo condition = new ExpressionInfo(ifStatement.getExpression(), typeDeclaration);
-    final StatementInfo thenStatement = new StatementInfo(ifStatement.getThenStatement(), typeDeclaration);
-    final StatementInfo elseStatement = ifStatement.getElseStatement() == null ? null : new StatementInfo(ifStatement.getElseStatement(), typeDeclaration);
+    final ExpressionInfo condition = new ExpressionInfo(ifStatement.getExpression(), typeDeclaration, compilationUnitInfo);
+    final StatementInfo thenStatement = new StatementInfo(ifStatement.getThenStatement(), typeDeclaration, compilationUnitInfo);
+    final StatementInfo elseStatement = ifStatement.getElseStatement() == null ? null : new StatementInfo(ifStatement.getElseStatement(), typeDeclaration, compilationUnitInfo);
     return f.newIfStatement(condition.getExpression(), thenStatement.getStatement(), elseStatement == null ? null : elseStatement.getStatement());
   }
 
   private IASTStatement convertExpressionStatement(final ExpressionStatement expressionStatement) {
-    return f.newExpressionStatement(new ExpressionInfo(expressionStatement.getExpression(), typeDeclaration).getExpression());
+    return f.newExpressionStatement(new ExpressionInfo(expressionStatement.getExpression(), typeDeclaration, compilationUnitInfo).getExpression());
   }
 
   private IASTStatement convertBlock(final Block block) {
     final IASTCompoundStatement compoundStatement = f.newCompoundStatement();
     for (final Object statementObject : block.statements()) {
-      final StatementInfo statementInfo = new StatementInfo((Statement) statementObject, typeDeclaration);
+      final StatementInfo statementInfo = new StatementInfo((Statement) statementObject, typeDeclaration, compilationUnitInfo);
       compoundStatement.addStatement(statementInfo.getStatement());
     }
     return compoundStatement;

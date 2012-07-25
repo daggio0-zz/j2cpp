@@ -25,29 +25,29 @@ public class TypeDeclarationInfo {
   final List<TypeDeclarationInfo> subTypes = new ArrayList<TypeDeclarationInfo>();
   final List<FieldDeclarationInfo> fields = new ArrayList<FieldDeclarationInfo>();
   final List<MethodDeclarationInfo> methods = new ArrayList<MethodDeclarationInfo>();
-  public List<FieldDeclarationInfo> orderedFields = new ArrayList<FieldDeclarationInfo>();
+  final List<FieldDeclarationInfo> orderedFields = new ArrayList<FieldDeclarationInfo>();
 
   final ModifiersInfo modifiers;
-  private final TypeDeclarationInfo enclosingType;
 
   private final TypeDeclaration typeDeclaration;
+  private final TypeDeclarationInfo enclosingType;
 
-  public TypeDeclarationInfo(final TypeDeclaration typeDeclaration, final TypeDeclarationInfo enclosingType, final List<String> namespace) {
+  public TypeDeclarationInfo(final TypeDeclaration typeDeclaration, final TypeDeclarationInfo enclosingType, final List<String> namespace, final CompilationUnitInfo compilationUnitInfo) {
     this.typeDeclaration = typeDeclaration;
     this.enclosingType = enclosingType;
     modifiers = new ModifiersInfo(typeDeclaration.modifiers());
     name = typeDeclaration.getName();
 
     for (final TypeDeclaration subtypeDeclaration : typeDeclaration.getTypes()) {
-      final TypeDeclarationInfo subTypeDeclarationInfo = new TypeDeclarationInfo(subtypeDeclaration, this, namespace);
+      final TypeDeclarationInfo subTypeDeclarationInfo = new TypeDeclarationInfo(subtypeDeclaration, this, namespace, compilationUnitInfo);
       subTypes.add(subTypeDeclarationInfo);
     }
     for (final FieldDeclaration fieldDeclaration : typeDeclaration.getFields()) {
-      final FieldDeclarationInfo fieldDeclarationInfo = new FieldDeclarationInfo(fieldDeclaration);
+      final FieldDeclarationInfo fieldDeclarationInfo = new FieldDeclarationInfo(fieldDeclaration, compilationUnitInfo);
       fields.add(fieldDeclarationInfo);
     }
     for (final MethodDeclaration methodDeclaration : typeDeclaration.getMethods()) {
-      final MethodDeclarationInfo methodDeclarationInfo = new MethodDeclarationInfo(methodDeclaration, typeDeclaration, namespace, enclosingType);
+      final MethodDeclarationInfo methodDeclarationInfo = new MethodDeclarationInfo(methodDeclaration, typeDeclaration, namespace, enclosingType, compilationUnitInfo);
       methods.add(methodDeclarationInfo);
     }
 

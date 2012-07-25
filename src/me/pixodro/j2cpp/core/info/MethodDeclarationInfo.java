@@ -18,16 +18,16 @@ public class MethodDeclarationInfo {
   private final IASTSimpleDeclaration declaration;
   private final ICPPASTFunctionDefinition definition;
 
-  public MethodDeclarationInfo(final MethodDeclaration methodDeclaration, final TypeDeclaration typeDeclaration, @SuppressWarnings("unused") final List<String> namespace, final TypeDeclarationInfo enclosingType) {
+  public MethodDeclarationInfo(final MethodDeclaration methodDeclaration, final TypeDeclaration typeDeclaration, @SuppressWarnings("unused") final List<String> namespace, final TypeDeclarationInfo enclosingType, final CompilationUnitInfo compilationUnitInfo) {
     this.methodDeclaration = methodDeclaration;
     modifiers = new ModifiersInfo(methodDeclaration.modifiers());
 
     // Declaration
-    declaration = new FunctionDeclarationInfo(methodDeclaration, typeDeclaration, enclosingType).getDeclaration();
+    declaration = new FunctionDeclarationInfo(methodDeclaration, typeDeclaration, enclosingType, compilationUnitInfo).getDeclaration();
 
     // Definition
     if (!(modifiers.isAbstract || typeDeclaration.isInterface())) {
-      definition = new FunctionDefinitionInfo(methodDeclaration, typeDeclaration, enclosingType).getDefinition();
+      definition = new FunctionDefinitionInfo(methodDeclaration, typeDeclaration, enclosingType, compilationUnitInfo).getDefinition();
     } else {
       definition = null;
     }

@@ -93,7 +93,7 @@ public class CompilationUnitInfo {
       // }
       // }
 
-      final TypeDeclarationInfo typeDeclarationInfo = new TypeDeclarationInfo((TypeDeclaration) type, null, null);
+      final TypeDeclarationInfo typeDeclarationInfo = new TypeDeclarationInfo((TypeDeclaration) type, null, null, this);
       // Header file
       // if (rootNamespace == null) { // default package
       hpp.addDeclaration(buildTypeDeclaration(typeDeclarationInfo));

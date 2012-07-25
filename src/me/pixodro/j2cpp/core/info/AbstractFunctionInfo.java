@@ -15,7 +15,7 @@ public class AbstractFunctionInfo {
   protected final ICPPASTDeclSpecifier declSpecifier;
   protected final ModifiersInfo modifiers;
 
-  public AbstractFunctionInfo(final MethodDeclaration methodDeclaration, final TypeDeclarationInfo enclosingType) {
+  public AbstractFunctionInfo(final MethodDeclaration methodDeclaration, final TypeDeclarationInfo enclosingType, final CompilationUnitInfo compilationUnitInfo) {
     modifiers = new ModifiersInfo(methodDeclaration.modifiers());
     functionDeclarator = new CPPASTFunctionDeclarator();
 
@@ -23,7 +23,7 @@ public class AbstractFunctionInfo {
     if (methodDeclaration.isConstructor()) {
       declSpecifier = f.newSimpleDeclSpecifier();
     } else {
-      final TypeInfo returnTypeInfo = new TypeInfo(methodDeclaration.getReturnType2());
+      final TypeInfo returnTypeInfo = new TypeInfo(methodDeclaration.getReturnType2(), compilationUnitInfo);
       declSpecifier = returnTypeInfo.getDeclSpecifier();
       if (returnTypeInfo.isSimple() && !returnTypeInfo.getType().resolveBinding().isEnum()) {
         functionDeclarator.addPointerOperator(f.newPointer());
@@ -48,7 +48,7 @@ public class AbstractFunctionInfo {
 
     for (final Object parameterObject : methodDeclaration.parameters()) {
       final SingleVariableDeclaration parameter = (SingleVariableDeclaration) parameterObject;
-      final SingleVariableDeclarationInfo declarationInfo = new SingleVariableDeclarationInfo(parameter);
+      final SingleVariableDeclarationInfo declarationInfo = new SingleVariableDeclarationInfo(parameter, compilationUnitInfo);
       final IASTParameterDeclaration parameterDeclaration = f.newParameterDeclaration(declarationInfo.getDeclSpecifier(), declarationInfo.getDeclarator());
       functionDeclarator.addParameterDeclaration(parameterDeclaration);
     }

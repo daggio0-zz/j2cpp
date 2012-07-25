@@ -38,9 +38,11 @@ public class TypeInfo {
   private boolean simple;
   private boolean array;
   private final Type type;
+  private final CompilationUnitInfo compilationUnitInfo;
 
-  public TypeInfo(final Type type) {
+  public TypeInfo(final Type type, final CompilationUnitInfo compilationUnitInfo) {
     this.type = type;
+    this.compilationUnitInfo = compilationUnitInfo;
     declSpecifier = convertType(type);
   }
 
@@ -141,26 +143,26 @@ public class TypeInfo {
       }
       if (simpleName.getIdentifier().equals(Byte.class.getSimpleName())) {
         javaDefaultValue = f.newLiteralExpression(IASTLiteralExpression.lk_integer_constant, "0");
-        // CompilationUnitInfo.hppStdIncludes.add("cstdint");
-        // CompilationUnitInfo.cppStdIncludes.add("cstdint");
+        compilationUnitInfo.hppStdIncludes.add("cstdint");
+        compilationUnitInfo.cppStdIncludes.add("cstdint");
         return f.newTypedefNameSpecifier(f.newName("int8_t".toCharArray()));
       }
       if (simpleName.getIdentifier().equals(Short.class.getSimpleName())) {
         javaDefaultValue = f.newLiteralExpression(IASTLiteralExpression.lk_integer_constant, "0");
-        // CompilationUnitInfo.hppStdIncludes.add("cstdint");
-        // CompilationUnitInfo.cppStdIncludes.add("cstdint");
+        compilationUnitInfo.hppStdIncludes.add("cstdint");
+        compilationUnitInfo.cppStdIncludes.add("cstdint");
         return f.newTypedefNameSpecifier(f.newName("int16_t".toCharArray()));
       }
       if (simpleName.getIdentifier().equals(Integer.class.getSimpleName())) {
         javaDefaultValue = f.newLiteralExpression(IASTLiteralExpression.lk_integer_constant, "0");
-        // CompilationUnitInfo.hppStdIncludes.add("cstdint");
-        // CompilationUnitInfo.cppStdIncludes.add("cstdint");
+        compilationUnitInfo.hppStdIncludes.add("cstdint");
+        compilationUnitInfo.cppStdIncludes.add("cstdint");
         return f.newTypedefNameSpecifier(f.newName("int32_t".toCharArray()));
       }
       if (simpleName.getIdentifier().equals(Long.class.getSimpleName())) {
         javaDefaultValue = f.newLiteralExpression(IASTLiteralExpression.lk_integer_constant, "0");
-        // CompilationUnitInfo.hppStdIncludes.add("cstdint");
-        // CompilationUnitInfo.cppStdIncludes.add("cstdint");
+        compilationUnitInfo.hppStdIncludes.add("cstdint");
+        compilationUnitInfo.cppStdIncludes.add("cstdint");
         return f.newTypedefNameSpecifier(f.newName("int64_t".toCharArray()));
       }
     }
@@ -179,25 +181,25 @@ public class TypeInfo {
     // Here we can check if the parameterized type is a Java collection
     if (parameterizedTypeName.equals(Set.class.getSimpleName()) || //
         parameterizedTypeName.equals(HashSet.class.getSimpleName())) {
-      // CompilationUnitInfo.hppStdIncludes.add("set");
-      // CompilationUnitInfo.cppStdIncludes.add("set");
+      compilationUnitInfo.hppStdIncludes.add("set");
+      compilationUnitInfo.cppStdIncludes.add("set");
       parameterizedTypeName = "set";
     } else if (parameterizedTypeName.equals(List.class.getSimpleName()) || //
         parameterizedTypeName.equals(ArrayList.class.getSimpleName()) || //
         parameterizedTypeName.equals(LinkedList.class.getSimpleName())) {
-      // CompilationUnitInfo.hppStdIncludes.add("list");
-      // CompilationUnitInfo.cppStdIncludes.add("list");
+      compilationUnitInfo.hppStdIncludes.add("list");
+      compilationUnitInfo.cppStdIncludes.add("list");
       parameterizedTypeName = "list";
     } else if (parameterizedTypeName.equals(Map.class.getSimpleName()) || //
         parameterizedTypeName.equals(HashMap.class.getSimpleName())) {
-      // CompilationUnitInfo.hppStdIncludes.add("map");
-      // CompilationUnitInfo.cppStdIncludes.add("map");
+      compilationUnitInfo.hppStdIncludes.add("map");
+      compilationUnitInfo.cppStdIncludes.add("map");
       parameterizedTypeName = "map";
     }
 
     final ICPPASTTemplateId templateId = f.newTemplateId(f.newName(parameterizedTypeName.toCharArray()));
     for (final Object parameterTypeObject : parameterizedType.typeArguments()) {
-      final TypeInfo parameterTypeInfo = new TypeInfo((Type) parameterTypeObject);
+      final TypeInfo parameterTypeInfo = new TypeInfo((Type) parameterTypeObject, compilationUnitInfo);
       final ICPPASTDeclarator parameterDeclarator = f.newDeclarator(f.newName());
       if (parameterTypeInfo.isSimple()) {
         parameterDeclarator.addPointerOperator(f.newPointer());

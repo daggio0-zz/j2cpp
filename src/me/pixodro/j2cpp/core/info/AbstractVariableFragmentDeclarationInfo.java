@@ -26,8 +26,8 @@ abstract public class AbstractVariableFragmentDeclarationInfo {
   protected final ICPPASTDeclSpecifier declSpecifier;
   protected final IASTExpression initializer;
 
-  public AbstractVariableFragmentDeclarationInfo(final VariableDeclaration variableDeclaration, final Type type) {
-    declSpecifier = new TypeInfo(type).getDeclSpecifier();
+  public AbstractVariableFragmentDeclarationInfo(final VariableDeclaration variableDeclaration, final Type type, final CompilationUnitInfo compilationUnitInfo) {
+    declSpecifier = new TypeInfo(type, compilationUnitInfo).getDeclSpecifier();
 
     if (type.isArrayType()) {
       final ICPPASTArrayDeclarator arrayDeclarator = f.newArrayDeclarator(new NameInfo(variableDeclaration.getName()).getName());
@@ -35,7 +35,7 @@ abstract public class AbstractVariableFragmentDeclarationInfo {
       if (variableDeclaration.getInitializer() != null) {
         final ArrayCreation arrayCreation = (ArrayCreation) variableDeclaration.getInitializer();
         for (final Object dimensionObject : arrayCreation.dimensions()) {
-          final ExpressionInfo dimension = new ExpressionInfo((Expression) dimensionObject, null);
+          final ExpressionInfo dimension = new ExpressionInfo((Expression) dimensionObject, null, compilationUnitInfo);
           arrayDeclarator.addArrayModifier(f.newArrayModifier(dimension.getExpression()));
         }
       } else {
@@ -48,7 +48,7 @@ abstract public class AbstractVariableFragmentDeclarationInfo {
       declarator = arrayDeclarator;
     } else {
       declarator = f.newDeclarator(new NameInfo(variableDeclaration.getName()).getName());
-      initializer = variableDeclaration.getInitializer() == null ? null : new ExpressionInfo(variableDeclaration.getInitializer(), null).getExpression();
+      initializer = variableDeclaration.getInitializer() == null ? null : new ExpressionInfo(variableDeclaration.getInitializer(), null, compilationUnitInfo).getExpression();
       if (initializer != null) {
         final IASTEqualsInitializer equalsInitializer = f.newEqualsInitializer(initializer);
         declarator.setInitializer(equalsInitializer);

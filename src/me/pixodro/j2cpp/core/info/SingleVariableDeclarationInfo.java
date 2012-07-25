@@ -10,7 +10,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
  * To change this template use File | Settings | File Templates.
  */
 public class SingleVariableDeclarationInfo extends AbstractVariableFragmentDeclarationInfo {
-  public SingleVariableDeclarationInfo(final SingleVariableDeclaration singleVariableDeclaration) {
-    super(singleVariableDeclaration, singleVariableDeclaration.getType());
+  public SingleVariableDeclarationInfo(final SingleVariableDeclaration singleVariableDeclaration, final CompilationUnitInfo compilationUnitInfo) {
+    super(singleVariableDeclaration, singleVariableDeclaration.getType(), compilationUnitInfo);
   }
 }

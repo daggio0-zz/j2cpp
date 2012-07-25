@@ -11,7 +11,7 @@ import org.eclipse.jdt.core.dom.VariableDeclaration;
  * To change this template use File | Settings | File Templates.
  */
 public class VariableDeclarationFragmentInfo extends AbstractVariableFragmentDeclarationInfo {
-  public VariableDeclarationFragmentInfo(final VariableDeclaration variableDeclaration, final Type type) {
-    super(variableDeclaration, type);
+  public VariableDeclarationFragmentInfo(final VariableDeclaration variableDeclaration, final Type type, final CompilationUnitInfo compilationUnitInfo) {
+    super(variableDeclaration, type, compilationUnitInfo);
   }
 }

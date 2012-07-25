@@ -22,19 +22,22 @@ abstract public class AbstractVariableDeclarationInfo {
 
   private final IASTSimpleDeclaration declaration;
 
-  public AbstractVariableDeclarationInfo(final VariableDeclarationStatement variableDeclarationStatement) {
+  private CompilationUnitInfo compilationUnitInfo;
+
+  public AbstractVariableDeclarationInfo(final VariableDeclarationStatement variableDeclarationStatement, final CompilationUnitInfo compilationUnitInfo) {
     final VariableDeclarationWrapper wrapper = new VariableDeclarationWrapper(variableDeclarationStatement);
-    declaration = convertWrapper(wrapper);
+    declaration = convertWrapper(wrapper, compilationUnitInfo);
   }
 
-  public AbstractVariableDeclarationInfo(final VariableDeclarationExpression variableDeclarationExpression) {
+  public AbstractVariableDeclarationInfo(final VariableDeclarationExpression variableDeclarationExpression, final CompilationUnitInfo compilationUnitInfo) {
     final VariableDeclarationWrapper wrapper = new VariableDeclarationWrapper(variableDeclarationExpression);
-    declaration = convertWrapper(wrapper);
+    declaration = convertWrapper(wrapper, compilationUnitInfo);
   }
 
-  private IASTSimpleDeclaration convertWrapper(final VariableDeclarationWrapper wrapper) {
+  private IASTSimpleDeclaration convertWrapper(final VariableDeclarationWrapper wrapper, final CompilationUnitInfo compilationUnitInfo) {
+    this.compilationUnitInfo = compilationUnitInfo;
     final ModifiersInfo modifiers = new ModifiersInfo(wrapper.modifiers());
-    final TypeInfo typeInfo = new TypeInfo(wrapper.getType());
+    final TypeInfo typeInfo = new TypeInfo(wrapper.getType(), compilationUnitInfo);
 
     final IASTDeclSpecifier declSpecifier = typeInfo.getDeclSpecifier();
 
@@ -53,7 +56,7 @@ abstract public class AbstractVariableDeclarationInfo {
     final IASTSimpleDeclaration simpleDeclaration = f.newSimpleDeclaration(declSpecifier);
     for (final Object fragmentObject : wrapper.fragments()) {
       final VariableDeclarationFragment fragment = (VariableDeclarationFragment) fragmentObject;
-      final VariableDeclarationFragmentInfo fragmentInfo = new VariableDeclarationFragmentInfo(fragment, wrapper.getType());
+      final VariableDeclarationFragmentInfo fragmentInfo = new VariableDeclarationFragmentInfo(fragment, wrapper.getType(), compilationUnitInfo);
       simpleDeclaration.addDeclarator(fragmentInfo.getDeclarator());
 
     }

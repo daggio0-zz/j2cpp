@@ -60,9 +60,11 @@ public class ExpressionInfo {
   private IASTExpression expression;
 
   private final TypeDeclaration typeDeclaration;
+  private final CompilationUnitInfo compilationUnitInfo;
 
-  ExpressionInfo(final Expression javaExpression, final TypeDeclaration typeDeclaration) {
+  ExpressionInfo(final Expression javaExpression, final TypeDeclaration typeDeclaration, final CompilationUnitInfo compilationUnitInfo) {
     this.typeDeclaration = typeDeclaration;
+    this.compilationUnitInfo = compilationUnitInfo;
     if (javaExpression instanceof ClassInstanceCreation) {
       expression = convertClassInstanceCreation((ClassInstanceCreation) javaExpression);
     } else if (javaExpression instanceof ConditionalExpression) {
@@ -92,7 +94,7 @@ public class ExpressionInfo {
     } else if (javaExpression instanceof FieldAccess) {
       expression = convertFieldAccess((FieldAccess) javaExpression);
     } else if (javaExpression instanceof ParenthesizedExpression) {
-      expression = f.newUnaryExpression(IASTUnaryExpression.op_bracketedPrimary, new ExpressionInfo(((ParenthesizedExpression) javaExpression).getExpression(), typeDeclaration).getExpression());
+      expression = f.newUnaryExpression(IASTUnaryExpression.op_bracketedPrimary, new ExpressionInfo(((ParenthesizedExpression) javaExpression).getExpression(), typeDeclaration, compilationUnitInfo).getExpression());
     } else if (javaExpression instanceof PostfixExpression) {
       expression = convertPostfixExpression((PostfixExpression) javaExpression);
     } else if (javaExpression instanceof ArrayCreation) {
@@ -173,7 +175,7 @@ public class ExpressionInfo {
         // return f.newUnaryExpression(IASTUnaryExpression.op_star, idExpression);
       }
     }
-    final ExpressionInfo expressionInfo = new ExpressionInfo(qualifiedName.getQualifier(), typeDeclaration);
+    final ExpressionInfo expressionInfo = new ExpressionInfo(qualifiedName.getQualifier(), typeDeclaration, compilationUnitInfo);
     final ICPPASTFieldReference fieldReference = f.newFieldReference(new NameInfo(qualifiedName.getName()).getName(), expressionInfo.getExpression());
     fieldReference.setIsPointerDereference(true);
     return fieldReference;
@@ -190,7 +192,7 @@ public class ExpressionInfo {
         call = f.newIdExpression(qualifiedName);
       } else {
         final Expression qualifier = methodInvocation.getExpression();
-        final ICPPASTFieldReference fieldReference = f.newFieldReference(new NameInfo(methodInvocation.getName()).getName(), new ExpressionInfo(qualifier, typeDeclaration).getExpression());
+        final ICPPASTFieldReference fieldReference = f.newFieldReference(new NameInfo(methodInvocation.getName()).getName(), new ExpressionInfo(qualifier, typeDeclaration, compilationUnitInfo).getExpression());
         final ITypeBinding typeBinding = qualifier.resolveTypeBinding();
         if ((typeBinding != null) && !(typeBinding.isPrimitive() || typeBinding.isEnum())) {
           fieldReference.setIsPointerDereference(true);
@@ -198,56 +200,56 @@ public class ExpressionInfo {
         call = fieldReference;
       }
     } else {
-      call = new ExpressionInfo(methodInvocation.getName(), typeDeclaration).getExpression();
+      call = new ExpressionInfo(methodInvocation.getName(), typeDeclaration, compilationUnitInfo).getExpression();
     }
 
     final List<IASTInitializerClause> initializerClauses = new ArrayList<IASTInitializerClause>();
     for (final Object argumentObject : methodInvocation.arguments()) {
-      final ExpressionInfo argument = new ExpressionInfo((Expression) argumentObject, typeDeclaration);
+      final ExpressionInfo argument = new ExpressionInfo((Expression) argumentObject, typeDeclaration, compilationUnitInfo);
       initializerClauses.add(argument.getExpression());
     }
     return f.newFunctionCallExpression(call, initializerClauses.toArray(new IASTInitializerClause[initializerClauses.size()]));
   }
 
   private IASTExpression convertConditionalExpression(final ConditionalExpression conditionalExpression) {
-    final IASTExpression condition = new ExpressionInfo(conditionalExpression.getExpression(), typeDeclaration).getExpression();
-    final IASTExpression positive = new ExpressionInfo(conditionalExpression.getThenExpression(), typeDeclaration).getExpression();
-    final IASTExpression negative = new ExpressionInfo(conditionalExpression.getElseExpression(), typeDeclaration).getExpression();
+    final IASTExpression condition = new ExpressionInfo(conditionalExpression.getExpression(), typeDeclaration, compilationUnitInfo).getExpression();
+    final IASTExpression positive = new ExpressionInfo(conditionalExpression.getThenExpression(), typeDeclaration, compilationUnitInfo).getExpression();
+    final IASTExpression negative = new ExpressionInfo(conditionalExpression.getElseExpression(), typeDeclaration, compilationUnitInfo).getExpression();
     return f.newConditionalExpession(condition, positive, negative);
   }
 
   private IASTExpression convertArrayAccess(final ArrayAccess arrayAccess) {
-    final IASTExpression arrayExpr = new ExpressionInfo(arrayAccess.getArray(), typeDeclaration).getExpression();
-    final IASTExpression subscript = new ExpressionInfo(arrayAccess.getIndex(), typeDeclaration).getExpression();
+    final IASTExpression arrayExpr = new ExpressionInfo(arrayAccess.getArray(), typeDeclaration, compilationUnitInfo).getExpression();
+    final IASTExpression subscript = new ExpressionInfo(arrayAccess.getIndex(), typeDeclaration, compilationUnitInfo).getExpression();
     return f.newArraySubscriptExpression(arrayExpr, subscript);
   }
 
   private IASTExpression convertPrefixExpression(final PrefixExpression prefixExpression) {
     final OperatorInfo operatorInfo = new OperatorInfo(prefixExpression.getOperator());
-    final ExpressionInfo operand = new ExpressionInfo(prefixExpression.getOperand(), typeDeclaration);
+    final ExpressionInfo operand = new ExpressionInfo(prefixExpression.getOperand(), typeDeclaration, compilationUnitInfo);
     return f.newUnaryExpression(operatorInfo.getOperator(), operand.getExpression());
   }
 
   private IASTExpression convertPostfixExpression(final PostfixExpression postfixExpression) {
     final OperatorInfo operatorInfo = new OperatorInfo(postfixExpression.getOperator());
-    final ExpressionInfo operand = new ExpressionInfo(postfixExpression.getOperand(), typeDeclaration);
+    final ExpressionInfo operand = new ExpressionInfo(postfixExpression.getOperand(), typeDeclaration, compilationUnitInfo);
     return f.newUnaryExpression(operatorInfo.getOperator(), operand.getExpression());
   }
 
   private IASTExpression convertInfixExpression(final InfixExpression infixExpression) {
     final OperatorInfo operatorInfo = new OperatorInfo(infixExpression.getOperator());
-    final ExpressionInfo leftOperand = new ExpressionInfo(infixExpression.getLeftOperand(), typeDeclaration);
-    final ExpressionInfo rightOperand = new ExpressionInfo(infixExpression.getRightOperand(), typeDeclaration);
+    final ExpressionInfo leftOperand = new ExpressionInfo(infixExpression.getLeftOperand(), typeDeclaration, compilationUnitInfo);
+    final ExpressionInfo rightOperand = new ExpressionInfo(infixExpression.getRightOperand(), typeDeclaration, compilationUnitInfo);
     return f.newBinaryExpression(operatorInfo.getOperator(), leftOperand.getExpression(), rightOperand.getExpression());
   }
 
   private IASTExpression convertClassInstanceCreation(final ClassInstanceCreation classInstanceCreation) {
-    final TypeInfo typeInfo = new TypeInfo(classInstanceCreation.getType());
+    final TypeInfo typeInfo = new TypeInfo(classInstanceCreation.getType(), compilationUnitInfo);
     final ICPPASTDeclarator declarator = f.newDeclarator(f.newName());
 
     final List<IASTInitializerClause> initializerClauses = new ArrayList<IASTInitializerClause>();
     for (final Object argumentObject : classInstanceCreation.arguments()) {
-      final ExpressionInfo argument = new ExpressionInfo((Expression) argumentObject, typeDeclaration);
+      final ExpressionInfo argument = new ExpressionInfo((Expression) argumentObject, typeDeclaration, compilationUnitInfo);
       initializerClauses.add(argument.getExpression());
     }
     final ICPPASTConstructorInitializer constructorInitializer = f.newConstructorInitializer(initializerClauses.toArray(new IASTInitializerClause[initializerClauses.size()]));
@@ -257,13 +259,13 @@ public class ExpressionInfo {
 
   private IASTExpression convertAssignment(final Assignment assignment) {
     final OperatorInfo operatorInfo = new OperatorInfo(assignment.getOperator());
-    final ExpressionInfo leftHandSide = new ExpressionInfo(assignment.getLeftHandSide(), typeDeclaration);
-    final ExpressionInfo rightHandSide = new ExpressionInfo(assignment.getRightHandSide(), typeDeclaration);
+    final ExpressionInfo leftHandSide = new ExpressionInfo(assignment.getLeftHandSide(), typeDeclaration, compilationUnitInfo);
+    final ExpressionInfo rightHandSide = new ExpressionInfo(assignment.getRightHandSide(), typeDeclaration, compilationUnitInfo);
     return f.newBinaryExpression(operatorInfo.getOperator(), leftHandSide.getExpression(), rightHandSide.getExpression());
   }
 
   private IASTExpression convertFieldAccess(final FieldAccess fieldAccess) {
-    final ExpressionInfo expressionInfo = new ExpressionInfo(fieldAccess.getExpression(), typeDeclaration);
+    final ExpressionInfo expressionInfo = new ExpressionInfo(fieldAccess.getExpression(), typeDeclaration, compilationUnitInfo);
     final ICPPASTFieldReference fieldReference = f.newFieldReference(new NameInfo(fieldAccess.getName()).getName(), expressionInfo.getExpression());
     fieldReference.setIsPointerDereference(true);
     return fieldReference;

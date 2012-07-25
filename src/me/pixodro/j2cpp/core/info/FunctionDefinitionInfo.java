@@ -10,8 +10,8 @@ public class FunctionDefinitionInfo extends AbstractFunctionInfo {
   private static final CPPNodeFactory f = CPPNodeFactory.getDefault();
   private final ICPPASTFunctionDefinition definition;
 
-  public FunctionDefinitionInfo(final MethodDeclaration methodDeclaration, final TypeDeclaration typeDeclaration, final TypeDeclarationInfo enclosingType) {
-    super(methodDeclaration, enclosingType);
+  public FunctionDefinitionInfo(final MethodDeclaration methodDeclaration, final TypeDeclaration typeDeclaration, final TypeDeclarationInfo enclosingType, final CompilationUnitInfo compilationUnitInfo) {
+    super(methodDeclaration, enclosingType, compilationUnitInfo);
     final ICPPASTQualifiedName qualifiedName = f.newQualifiedName();
     // for (String name : namespace) {
     // qualifiedName.addName(f.newName(name.toCharArray()));
@@ -26,7 +26,7 @@ public class FunctionDefinitionInfo extends AbstractFunctionInfo {
     functionDeclarator.setName(qualifiedName);
 
     // Method body
-    final StatementInfo statementInfo = new StatementInfo(methodDeclaration.getBody(), typeDeclaration);
+    final StatementInfo statementInfo = new StatementInfo(methodDeclaration.getBody(), typeDeclaration, compilationUnitInfo);
     definition = f.newFunctionDefinition(declSpecifier, functionDeclarator, statementInfo.getStatement());
     // if (methodDeclaration.isConstructor() && (enclosingType != null)) {
     // // If the type is nested, simulate Java inner class access visibility by
