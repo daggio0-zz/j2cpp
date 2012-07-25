@@ -1,4 +1,4 @@
-package me.pixodro.j2cpp.core;
+package me.pixodro.j2cpp.core.info;
 
 import org.eclipse.cdt.core.dom.ast.IASTParameterDeclaration;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTDeclSpecifier;

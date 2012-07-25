@@ -1,4 +1,4 @@
-package me.pixodro.j2cpp.core;
+package me.pixodro.j2cpp.core.info;
 
 import java.util.HashMap;
 import java.util.Map;
