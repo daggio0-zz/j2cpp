@@ -74,6 +74,7 @@ public class Converter extends ASTRequestor {
     }
     output.append("\n");
     output.append(writer.write(compilationUnitInfo.getHpp()));
+    output.append("\n");
     output.append("#endif //__").append(compilationUnitInfo.getName()).append("_H_\n");
     return output.toString();
   }
