@@ -7,10 +7,12 @@ import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTInitializerClause;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTCastExpression;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTConstructorInitializer;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFieldReference;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTQualifiedName;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTTypeId;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPNodeFactory;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.ArrayAccess;
@@ -97,6 +99,8 @@ public class ExpressionInfo {
       expression = f.newUnaryExpression(IASTUnaryExpression.op_bracketedPrimary, new ExpressionInfo(((ParenthesizedExpression) javaExpression).getExpression(), typeDeclaration, compilationUnitInfo).getExpression());
     } else if (javaExpression instanceof PostfixExpression) {
       expression = convertPostfixExpression((PostfixExpression) javaExpression);
+    } else if (javaExpression instanceof CastExpression) {
+      expression = convertCastExpression((CastExpression) javaExpression);
     } else if (javaExpression instanceof ArrayCreation) {
       expression = f.newIdExpression(f.newName("TODO ArrayCreation".toCharArray()));
     } else if (javaExpression instanceof ArrayInitializer) {
@@ -105,8 +109,6 @@ public class ExpressionInfo {
       expression = f.newIdExpression(f.newName("TODO Annotation".toCharArray()));
     } else if (javaExpression instanceof SuperFieldAccess) {
       expression = f.newIdExpression(f.newName("TODO SuperFieldAccess".toCharArray()));
-    } else if (javaExpression instanceof CastExpression) {
-      expression = f.newIdExpression(f.newName("TODO CastExpression".toCharArray()));
     } else if (javaExpression instanceof StringLiteral) {
       expression = f.newIdExpression(f.newName("TODO StringLiteral".toCharArray()));
     } else if (javaExpression instanceof CharacterLiteral) {
@@ -122,6 +124,14 @@ public class ExpressionInfo {
     } else {
       throw new RuntimeException("unsupported expression: " + javaExpression);
     }
+  }
+
+  private IASTExpression convertCastExpression(final CastExpression castExpression) {
+    final int operator = ICPPASTCastExpression.op_static_cast;
+    final TypeInfo type = new TypeInfo(castExpression.getType(), compilationUnitInfo);
+    final ICPPASTTypeId typeId = f.newTypeId(type.getDeclSpecifier(), null);
+    final IASTExpression expr = new ExpressionInfo(castExpression.getExpression(), typeDeclaration, compilationUnitInfo).getExpression();
+    return f.newCastExpression(operator, typeId, expr);
   }
 
   private IASTExpression convertSimleName(final SimpleName simpleName) {

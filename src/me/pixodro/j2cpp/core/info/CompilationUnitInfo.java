@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import me.pixodro.j2cpp.core.JavaToCppConverter;
+import me.pixodro.j2cpp.core.Converter;
 
 import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier.IASTEnumerator;
@@ -156,7 +156,7 @@ public class CompilationUnitInfo {
       }
     }
     for (final MethodDeclarationInfo method : typeDeclarationInfo.methods()) {
-      if (method.getModifiers().isPrivate && !JavaToCppConverter.excludedJavaMethods.contains(method.getMethodDeclaration().getName().getIdentifier())) {
+      if (method.getModifiers().isPrivate && !Converter.excludedJavaMethods.contains(method.getMethodDeclaration().getName().getIdentifier())) {
         compositeTypeSpecifier.addDeclaration(method.getDeclaration());
       }
     }
@@ -174,7 +174,7 @@ public class CompilationUnitInfo {
       }
     }
     for (final MethodDeclarationInfo method : typeDeclarationInfo.methods()) {
-      if (method.getModifiers().isProtected && !JavaToCppConverter.excludedJavaMethods.contains(method.getMethodDeclaration().getName().getIdentifier())) {
+      if (method.getModifiers().isProtected && !Converter.excludedJavaMethods.contains(method.getMethodDeclaration().getName().getIdentifier())) {
         compositeTypeSpecifier.addDeclaration(method.getDeclaration());
       }
     }
@@ -192,7 +192,7 @@ public class CompilationUnitInfo {
       }
     }
     for (final MethodDeclarationInfo method : typeDeclarationInfo.methods()) {
-      if (method.getModifiers().isPublic && !JavaToCppConverter.excludedJavaMethods.contains(method.getMethodDeclaration().getName().getIdentifier())) {
+      if (method.getModifiers().isPublic && !Converter.excludedJavaMethods.contains(method.getMethodDeclaration().getName().getIdentifier())) {
         compositeTypeSpecifier.addDeclaration(method.getDeclaration());
       }
     }
@@ -255,7 +255,7 @@ public class CompilationUnitInfo {
       // }
       // }
       // }
-      if ((method.getDefinition() != null) && !JavaToCppConverter.excludedJavaMethods.contains(method.getMethodDeclaration().getName().getIdentifier())) {
+      if ((method.getDefinition() != null) && !Converter.excludedJavaMethods.contains(method.getMethodDeclaration().getName().getIdentifier())) {
         translationUnit.addDeclaration(method.getDefinition());
       }
     }

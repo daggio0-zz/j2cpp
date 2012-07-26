@@ -17,13 +17,18 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IBinding;
 
 public class Converter extends ASTRequestor {
+  public static List<String> excludedJavaMethods = new ArrayList<String>();
+  static {
+    excludedJavaMethods.add("equals");
+    excludedJavaMethods.add("hashCode");
+  }
+
   private final List<CompilationUnitInfo> compilationUnitInfos = new ArrayList<CompilationUnitInfo>();
 
   @Override
   public void acceptAST(final ICompilationUnit source, final CompilationUnit compilationUnit) {
     super.acceptAST(source, compilationUnit);
     try {
-      System.out.println("Converting: " + source);
       compilationUnitInfos.add(new CompilationUnitInfo(compilationUnit));
     } catch (final Exception e) {
       e.printStackTrace();
@@ -39,7 +44,6 @@ public class Converter extends ASTRequestor {
     for (final CompilationUnitInfo compilationUnitInfo : compilationUnitInfos) {
       try {
         final String baseName = compilationUnitInfo.getName();
-        System.out.println("Generating: " + baseName);
 
         final String headerOutput = generateHeader(compilationUnitInfo);
         final InputStream headerStream = new ByteArrayInputStream(headerOutput.getBytes());
@@ -68,11 +72,11 @@ public class Converter extends ASTRequestor {
     for (final String include : compilationUnitInfo.hppIncludes) {
       output.append("#include \"").append(include).append(".h\"\n");
     }
-    output.append("\n");
     if (!compilationUnitInfo.hppStdIncludes.isEmpty()) {
+      output.append("\n");
       output.append("using namespace std;\n");
+      output.append("\n");
     }
-    output.append("\n");
     output.append(writer.write(compilationUnitInfo.getHpp()));
     output.append("\n");
     output.append("#endif //__").append(compilationUnitInfo.getName()).append("_H_\n");
@@ -92,9 +96,20 @@ public class Converter extends ASTRequestor {
     output.append("\n");
     if (!compilationUnitInfo.cppStdIncludes.isEmpty()) {
       output.append("using namespace std;\n");
+      output.append("\n");
     }
-    output.append("\n");
     output.append(writer.write(compilationUnitInfo.getCpp()));
     return output.toString();
+  }
+
+  static boolean isSTLType(final String typeName) {
+    if ("set".equalsIgnoreCase(typeName)) {
+      return true;
+    } else if ("list".equalsIgnoreCase(typeName)) {
+      return true;
+    } else if ("map".equalsIgnoreCase(typeName)) {
+      return true;
+    }
+    return false;
   }
 }

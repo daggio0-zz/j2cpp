@@ -22,23 +22,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-/**
- * Our sample handler extends AbstractHandler, an IHandler base class.
- * 
- * @see org.eclipse.core.commands.IHandler
- * @see org.eclipse.core.commands.AbstractHandler
- */
 public class ConvertToCppHandler extends AbstractHandler {
-  /**
-   * The constructor.
-   */
-  public ConvertToCppHandler() {
-  }
-
-  /**
-   * the command has been executed, so extract the needed information
-   * from the application context.
-   */
   @Override
   public Object execute(final ExecutionEvent event) throws ExecutionException {
     try {
@@ -75,7 +59,6 @@ public class ConvertToCppHandler extends AbstractHandler {
       converter.generateTo(folder);
     } catch (final Exception e) {
       e.printStackTrace();
-      // throw new ExecutionException(e.getMessage());
     }
 
     return null;

@@ -181,8 +181,7 @@ public class TypeInfo {
 
     // Here we can check if the parameterized type is a Java collection
     if (parameterizedTypeName.equals(Set.class.getSimpleName()) || //
-        parameterizedTypeName.equals(HashSet.class.getSimpleName()) ||
-        parameterizedTypeName.equals(LinkedHashSet.class.getSimpleName()) ) {
+        parameterizedTypeName.equals(HashSet.class.getSimpleName()) || parameterizedTypeName.equals(LinkedHashSet.class.getSimpleName())) {
       compilationUnitInfo.hppStdIncludes.add("set");
       compilationUnitInfo.cppStdIncludes.add("set");
       parameterizedTypeName = "set";
