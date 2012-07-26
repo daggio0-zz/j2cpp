@@ -3,6 +3,7 @@ package me.pixodro.j2cpp.core.info;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -180,7 +181,8 @@ public class TypeInfo {
 
     // Here we can check if the parameterized type is a Java collection
     if (parameterizedTypeName.equals(Set.class.getSimpleName()) || //
-        parameterizedTypeName.equals(HashSet.class.getSimpleName())) {
+        parameterizedTypeName.equals(HashSet.class.getSimpleName()) ||
+        parameterizedTypeName.equals(LinkedHashSet.class.getSimpleName()) ) {
       compilationUnitInfo.hppStdIncludes.add("set");
       compilationUnitInfo.cppStdIncludes.add("set");
       parameterizedTypeName = "set";
