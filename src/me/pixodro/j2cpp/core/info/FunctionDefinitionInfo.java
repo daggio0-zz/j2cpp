@@ -1,6 +1,7 @@
 package me.pixodro.j2cpp.core.info;
 
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTInitializerList;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTQualifiedName;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPNodeFactory;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -28,19 +29,11 @@ public class FunctionDefinitionInfo extends AbstractFunctionInfo {
     // Method body
     final StatementInfo statementInfo = new StatementInfo(methodDeclaration.getBody(), typeDeclaration, compilationUnitInfo);
     definition = f.newFunctionDefinition(declSpecifier, functionDeclarator, statementInfo.getStatement());
-    // if (methodDeclaration.isConstructor() && (enclosingType != null)) {
-    // // If the type is nested, simulate Java inner class access visibility by
-    // // creating a reference to the outer type on the constructor
-    // final List<IASTInitializerClause> initializerClauses = new
-    // ArrayList<IASTInitializerClause>();
-    // initializerClauses.add(f.newIdExpression(f.newName("__parent".toCharArray())));
-    // final ICPPASTConstructorInitializer initializer =
-    // f.newConstructorInitializer(initializerClauses.toArray(new
-    // IASTInitializerClause[initializerClauses.size()]));
-    // final ICPPASTConstructorChainInitializer chainInitializer =
-    // f.newConstructorChainInitializer(f.newName("__parent".toCharArray()), initializer);
-    // definition.addMemberInitializer(chainInitializer);
-    // }
+    if (methodDeclaration.isConstructor() && (enclosingType != null)) {
+      final ICPPASTInitializerList initializerList = f.newInitializerList();
+      initializerList.addClause(f.newIdExpression(f.newName("__parent".toCharArray())));
+      definition.addMemberInitializer(f.newConstructorChainInitializer(f.newName("__parent".toCharArray()), initializerList));
+    }
   }
 
   public ICPPASTFunctionDefinition getDefinition() {

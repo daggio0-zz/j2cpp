@@ -165,9 +165,9 @@ public class TypeInfo {
       }
     }
     simple = true;
+
     final ITypeBinding typeBinding = type.resolveBinding();
     IASTName name;
-
     if (typeBinding.isNested()) {
       final ICPPASTQualifiedName qualifiedName = f.newQualifiedName();
       qualifiedName.addName(f.newName(typeBinding.getDeclaringClass().getName().toCharArray()));
@@ -176,8 +176,8 @@ public class TypeInfo {
       compilationUnitInfo.cppIncludes.add(typeBinding.getDeclaringClass().getName());
       name = qualifiedName;
     } else {
-      compilationUnitInfo.hppIncludes.add(typeBinding.getName());
-      compilationUnitInfo.cppIncludes.add(typeBinding.getName());
+      compilationUnitInfo.hppIncludes.add(new NameInfo(simpleType.getName()).getNameAsString());
+      compilationUnitInfo.cppIncludes.add(new NameInfo(simpleType.getName()).getNameAsString());
       name = new NameInfo(simpleType.getName()).getName();
     }
     return f.newTypedefNameSpecifier(name);
