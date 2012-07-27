@@ -34,6 +34,7 @@ public class TypeInfo {
   private IASTExpression javaDefaultValue;
   private boolean simple;
   private boolean array;
+  private boolean stl;
   private final Type type;
   private final CompilationUnitInfo compilationUnitInfo;
 
@@ -194,14 +195,17 @@ public class TypeInfo {
     if (Converter.setClasses.contains(parameterizedTypeName)) {
       compilationUnitInfo.hppStdIncludes.add("set");
       compilationUnitInfo.cppStdIncludes.add("set");
+      stl = true;
       parameterizedTypeName = "set";
     } else if (Converter.listClasses.contains(parameterizedTypeName)) {
       compilationUnitInfo.hppStdIncludes.add("list");
       compilationUnitInfo.cppStdIncludes.add("list");
+      stl = true;
       parameterizedTypeName = "list";
     } else if (Converter.mapClasses.contains(parameterizedTypeName)) {
       compilationUnitInfo.hppStdIncludes.add("map");
       compilationUnitInfo.cppStdIncludes.add("map");
+      stl = true;
       parameterizedTypeName = "map";
     }
 
@@ -236,5 +240,9 @@ public class TypeInfo {
 
   public Type getType() {
     return type;
+  }
+
+  public boolean isStl() {
+    return stl;
   }
 }

@@ -1,7 +1,5 @@
 package me.pixodro.j2cpp.core.info;
 
-import me.pixodro.j2cpp.core.Converter;
-
 import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTArrayDeclarator;
@@ -30,7 +28,8 @@ abstract public class AbstractVariableFragmentDeclarationInfo {
   protected final IASTExpression initializer;
 
   public AbstractVariableFragmentDeclarationInfo(final VariableDeclaration variableDeclaration, final Type type, final CompilationUnitInfo compilationUnitInfo) {
-    declSpecifier = new TypeInfo(type, compilationUnitInfo).getDeclSpecifier();
+    final TypeInfo typeInfo = new TypeInfo(type, compilationUnitInfo);
+    declSpecifier = typeInfo.getDeclSpecifier();
 
     if (type.isArrayType()) {
       final ICPPASTArrayDeclarator arrayDeclarator = f.newArrayDeclarator(new NameInfo(variableDeclaration.getName()).getName());
@@ -53,11 +52,11 @@ abstract public class AbstractVariableFragmentDeclarationInfo {
       declarator = f.newDeclarator(new NameInfo(variableDeclaration.getName()).getName());
       initializer = variableDeclaration.getInitializer() == null ? null : new ExpressionInfo(variableDeclaration.getInitializer(), null, compilationUnitInfo).getExpression();
       final ITypeBinding typeBinding = type.resolveBinding();
-      if ((initializer != null) && !Converter.collectionClasses.contains(typeBinding.getName())) {
+      if ((initializer != null) && !typeInfo.isStl()) {
         final IASTEqualsInitializer equalsInitializer = f.newEqualsInitializer(initializer);
         declarator.setInitializer(equalsInitializer);
       }
-      if ((type.isSimpleType() || type.isParameterizedType()) && !typeBinding.isEnum()) {
+      if ((type.isSimpleType() || type.isParameterizedType()) && !typeBinding.isEnum() && !typeInfo.isStl()) {
         declarator.addPointerOperator(f.newPointer());
       }
     }

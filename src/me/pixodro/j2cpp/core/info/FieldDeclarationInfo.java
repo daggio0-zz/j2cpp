@@ -57,7 +57,7 @@ public class FieldDeclarationInfo {
       final VariableDeclarationFragment fragment = (VariableDeclarationFragment) fragmentObject;
       final VariableDeclarationFragmentInfo fragmentInfo = new VariableDeclarationFragmentInfo(fragment, fieldDeclaration.getType(), compilationUnitInfo);
       fragments.put(new NameInfo(fragment.getName()).getName(), fragmentInfo.initializer);
-      if (fragmentInfo.getDeclarator().getInitializer() == null) {
+      if ((fragmentInfo.getDeclarator().getInitializer() == null) && !new TypeInfo(fieldDeclaration.getType(), compilationUnitInfo).isStl()) {
         fragmentInfo.getDeclarator().setInitializer(f.newEqualsInitializer(typeInfo.getJavaDefaultValue()));
       }
       simpleDeclaration.addDeclarator(fragmentInfo.getDeclarator());
