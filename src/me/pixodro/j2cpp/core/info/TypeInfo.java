@@ -176,9 +176,12 @@ public class TypeInfo {
       compilationUnitInfo.cppIncludes.add(typeBinding.getDeclaringClass().getName());
       name = qualifiedName;
     } else {
-      compilationUnitInfo.hppIncludes.add(new NameInfo(simpleType.getName()).getNameAsString());
-      compilationUnitInfo.cppIncludes.add(new NameInfo(simpleType.getName()).getNameAsString());
-      name = new NameInfo(simpleType.getName()).getName();
+      final NameInfo nameInfo = new NameInfo(simpleType.getName());
+      if (!nameInfo.getNameAsString().equals(Object.class.getSimpleName())) {
+        compilationUnitInfo.hppIncludes.add(nameInfo.getNameAsString());
+        compilationUnitInfo.cppIncludes.add(nameInfo.getNameAsString());
+      }
+      name = nameInfo.getName();
     }
     return f.newTypedefNameSpecifier(name);
   }
