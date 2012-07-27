@@ -1,13 +1,6 @@
 package me.pixodro.j2cpp.core.info;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import me.pixodro.j2cpp.core.Converter;
 
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
@@ -99,8 +92,8 @@ public class TypeInfo {
       return simpleDeclSpecifier;
     }
     javaDefaultValue = f.newLiteralExpression(IASTLiteralExpression.lk_integer_constant, "0");
-    // CompilationUnitInfo.hppStdIncludes.add("cstdint");
-    // CompilationUnitInfo.cppStdIncludes.add("cstdint");
+    compilationUnitInfo.hppStdIncludes.add("cstdint");
+    compilationUnitInfo.cppStdIncludes.add("cstdint");
     if (primitiveType.getPrimitiveTypeCode().equals(PrimitiveType.BYTE)) {
       return f.newTypedefNameSpecifier(f.newName("int8_t".toCharArray()));
     }
@@ -198,19 +191,15 @@ public class TypeInfo {
     String parameterizedTypeName = simpleType.getName().toString();
 
     // Here we can check if the parameterized type is a Java collection
-    if (parameterizedTypeName.equals(Set.class.getSimpleName()) || //
-        parameterizedTypeName.equals(HashSet.class.getSimpleName()) || parameterizedTypeName.equals(LinkedHashSet.class.getSimpleName())) {
+    if (Converter.setClasses.contains(parameterizedTypeName)) {
       compilationUnitInfo.hppStdIncludes.add("set");
       compilationUnitInfo.cppStdIncludes.add("set");
       parameterizedTypeName = "set";
-    } else if (parameterizedTypeName.equals(List.class.getSimpleName()) || //
-        parameterizedTypeName.equals(ArrayList.class.getSimpleName()) || //
-        parameterizedTypeName.equals(LinkedList.class.getSimpleName())) {
+    } else if (Converter.listClasses.contains(parameterizedTypeName)) {
       compilationUnitInfo.hppStdIncludes.add("list");
       compilationUnitInfo.cppStdIncludes.add("list");
       parameterizedTypeName = "list";
-    } else if (parameterizedTypeName.equals(Map.class.getSimpleName()) || //
-        parameterizedTypeName.equals(HashMap.class.getSimpleName())) {
+    } else if (Converter.mapClasses.contains(parameterizedTypeName)) {
       compilationUnitInfo.hppStdIncludes.add("map");
       compilationUnitInfo.cppStdIncludes.add("map");
       parameterizedTypeName = "map";

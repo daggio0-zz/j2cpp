@@ -101,6 +101,8 @@ public class ExpressionInfo {
       expression = convertPostfixExpression((PostfixExpression) javaExpression);
     } else if (javaExpression instanceof CastExpression) {
       expression = convertCastExpression((CastExpression) javaExpression);
+    } else if (javaExpression instanceof SuperMethodInvocation) {
+      expression = convertSuperMethodInvocation((SuperMethodInvocation) javaExpression);
     } else if (javaExpression instanceof ArrayCreation) {
       expression = f.newIdExpression(f.newName("TODO ArrayCreation".toCharArray()));
     } else if (javaExpression instanceof ArrayInitializer) {
@@ -115,8 +117,6 @@ public class ExpressionInfo {
       expression = f.newIdExpression(f.newName("TODO CharacterLiteral".toCharArray()));
     } else if (javaExpression instanceof TypeLiteral) {
       expression = f.newIdExpression(f.newName("TODO TypeLiteral".toCharArray()));
-    } else if (javaExpression instanceof SuperMethodInvocation) {
-      expression = f.newIdExpression(f.newName("TODO SuperMethodInvocation".toCharArray()));
     } else if (javaExpression instanceof InstanceofExpression) {
       expression = f.newIdExpression(f.newName("TODO InstanceofExpression".toCharArray()));
     } else if (javaExpression instanceof VariableDeclarationExpression) {
@@ -124,6 +124,20 @@ public class ExpressionInfo {
     } else {
       throw new RuntimeException("unsupported expression: " + javaExpression);
     }
+  }
+
+  private IASTExpression convertSuperMethodInvocation(final SuperMethodInvocation superMethodInvocation) {
+    final IMethodBinding methodBinding = superMethodInvocation.resolveMethodBinding();
+    final ICPPASTQualifiedName qualifiedName = f.newQualifiedName();
+    qualifiedName.addName(f.newName(methodBinding.getDeclaringClass().getName().toCharArray()));
+    qualifiedName.addName(new NameInfo(superMethodInvocation.getName()).getName());
+    final IASTExpression call = f.newIdExpression(qualifiedName);
+    final List<IASTInitializerClause> initializerClauses = new ArrayList<IASTInitializerClause>();
+    for (final Object argumentObject : superMethodInvocation.arguments()) {
+      final ExpressionInfo argument = new ExpressionInfo((Expression) argumentObject, typeDeclaration, compilationUnitInfo);
+      initializerClauses.add(argument.getExpression());
+    }
+    return f.newFunctionCallExpression(call, initializerClauses.toArray(new IASTInitializerClause[initializerClauses.size()]));
   }
 
   private IASTExpression convertCastExpression(final CastExpression castExpression) {

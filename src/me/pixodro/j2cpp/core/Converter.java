@@ -3,7 +3,13 @@ package me.pixodro.j2cpp.core;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import me.pixodro.j2cpp.core.info.CompilationUnitInfo;
 
@@ -18,9 +24,25 @@ import org.eclipse.jdt.core.dom.IBinding;
 
 public class Converter extends ASTRequestor {
   public static List<String> excludedJavaMethods = new ArrayList<String>();
+  public static List<String> setClasses = new ArrayList<String>();
+  public static List<String> listClasses = new ArrayList<String>();
+  public static List<String> mapClasses = new ArrayList<String>();
+  public static List<String> collectionClasses = new ArrayList<String>();
+
   static {
     excludedJavaMethods.add("equals");
     excludedJavaMethods.add("hashCode");
+    setClasses.add(Set.class.getSimpleName());
+    setClasses.add(HashSet.class.getSimpleName());
+    setClasses.add(LinkedHashSet.class.getSimpleName());
+    listClasses.add(List.class.getSimpleName());
+    listClasses.add(ArrayList.class.getSimpleName());
+    listClasses.add(LinkedList.class.getSimpleName());
+    mapClasses.add(Map.class.getSimpleName());
+    mapClasses.add(HashMap.class.getSimpleName());
+    collectionClasses.addAll(setClasses);
+    collectionClasses.addAll(listClasses);
+    collectionClasses.addAll(mapClasses);
   }
 
   private final List<CompilationUnitInfo> compilationUnitInfos = new ArrayList<CompilationUnitInfo>();
@@ -102,7 +124,7 @@ public class Converter extends ASTRequestor {
     return output.toString();
   }
 
-  static boolean isSTLType(final String typeName) {
+  public static boolean isSTLType(final String typeName) {
     if ("set".equalsIgnoreCase(typeName)) {
       return true;
     } else if ("list".equalsIgnoreCase(typeName)) {

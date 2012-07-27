@@ -60,9 +60,6 @@ public class FieldDeclarationInfo {
       if (fragmentInfo.getDeclarator().getInitializer() == null) {
         fragmentInfo.getDeclarator().setInitializer(f.newEqualsInitializer(typeInfo.getJavaDefaultValue()));
       }
-      // if (!(modifiers.isStatic && modifiers.isFinal)) {
-      // fragmentInfo.getDeclarator().setInitializer(null);
-      // }
       simpleDeclaration.addDeclarator(fragmentInfo.getDeclarator());
     }
     return simpleDeclaration;
