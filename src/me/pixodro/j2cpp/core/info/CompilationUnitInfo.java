@@ -1,7 +1,6 @@
 package me.pixodro.j2cpp.core.info;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import me.pixodro.j2cpp.core.Converter;
@@ -17,7 +16,6 @@ import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPNodeFactory;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
-import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -43,19 +41,19 @@ public class CompilationUnitInfo {
       throw new IllegalArgumentException("Multiple type declaration per compilation unit not supported");
     }
 
-    for (final Object importObject : compilationUnit.imports()) {
-      final ImportDeclaration importDeclaration = (ImportDeclaration) importObject;
-      if (importDeclaration.isStatic()) {
-        continue;
-      }
-      final NameInfo importName = new NameInfo(importDeclaration.getName());
-
-      final List<String> tokens = importName.tokenize();
-      // Exclude java imports as they're not supported
-      if (!tokens.get(0).contains("java")) {
-        hppIncludes.add(tokens.get(tokens.size() - 1));
-      }
-    }
+    // for (final Object importObject : compilationUnit.imports()) {
+    // final ImportDeclaration importDeclaration = (ImportDeclaration) importObject;
+    // if (importDeclaration.isStatic()) {
+    // continue;
+    // }
+    // final NameInfo importName = new NameInfo(importDeclaration.getName());
+    //
+    // final List<String> tokens = importName.tokenize();
+    // // Exclude java imports as they're not supported
+    // if (!tokens.get(0).contains("java")) {
+    // hppIncludes.add(tokens.get(tokens.size() - 1));
+    // }
+    // }
 
     // Namespaces
     // ICPPASTNamespaceDefinition currentNamespace = null, rootNamespace = null;
@@ -198,28 +196,27 @@ public class CompilationUnitInfo {
     }
 
     // Build includes
-    for (final FieldDeclarationInfo field : typeDeclarationInfo.fields()) {
-      if (field.getTypeInfo() != null) {
-        if (field.getTypeInfo().getType().isSimpleType()) {
-          final SimpleType simpleType = (SimpleType) field.getTypeInfo().getType();
-          if (!simpleType.resolveBinding().isMember()) {
-            hppIncludes.add(new NameInfo(simpleType.getName()).tokenize().get(0));
-          }
-        }
-      }
-    }
-
-    for (final MethodDeclarationInfo method : typeDeclarationInfo.methods()) {
-      final Type returnType = method.getMethodDeclaration().getReturnType2();
-      if (returnType != null) {
-        if (returnType.isSimpleType()) {
-          final SimpleType simpleType = (SimpleType) returnType;
-          if (!simpleType.resolveBinding().isMember()) {
-            hppIncludes.add(new NameInfo(simpleType.getName()).tokenize().get(0));
-          }
-        }
-      }
-    }
+    // for (final FieldDeclarationInfo field : typeDeclarationInfo.fields()) {
+    // if (field.getTypeInfo() != null) {
+    // if (field.getTypeInfo().getType().isSimpleType()) {
+    // final SimpleType simpleType = (SimpleType) field.getTypeInfo().getType();
+    // if (!simpleType.resolveBinding().isMember()) {
+    // hppIncludes.add(new NameInfo(simpleType.getName()).tokenize().get(0));
+    // }
+    // }
+    // }
+    // }
+    // for (final MethodDeclarationInfo method : typeDeclarationInfo.methods()) {
+    // final Type returnType = method.getMethodDeclaration().getReturnType2();
+    // if (returnType != null) {
+    // if (returnType.isSimpleType()) {
+    // final SimpleType simpleType = (SimpleType) returnType;
+    // if (!simpleType.resolveBinding().isMember()) {
+    // hppIncludes.add(new NameInfo(simpleType.getName()).tokenize().get(0));
+    // }
+    // }
+    // }
+    // }
     return f.newSimpleDeclaration(compositeTypeSpecifier);
   }
 

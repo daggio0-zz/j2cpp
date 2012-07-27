@@ -11,15 +11,18 @@ import java.util.Set;
 
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
+import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTTypeId;
 import org.eclipse.cdt.core.dom.ast.IBasicType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamedTypeSpecifier;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTQualifiedName;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTSimpleDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTTemplateId;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPNodeFactory;
 import org.eclipse.jdt.core.dom.ArrayType;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.PrimitiveType;
 import org.eclipse.jdt.core.dom.SimpleName;
@@ -168,7 +171,22 @@ public class TypeInfo {
       }
     }
     simple = true;
-    return f.newTypedefNameSpecifier(new NameInfo(simpleType.getName()).getName());
+    final ITypeBinding typeBinding = type.resolveBinding();
+    IASTName name;
+
+    if (typeBinding.isNested()) {
+      final ICPPASTQualifiedName qualifiedName = f.newQualifiedName();
+      qualifiedName.addName(f.newName(typeBinding.getDeclaringClass().getName().toCharArray()));
+      qualifiedName.addName(f.newName(typeBinding.getName().toCharArray()));
+      compilationUnitInfo.hppIncludes.add(typeBinding.getDeclaringClass().getName());
+      compilationUnitInfo.cppIncludes.add(typeBinding.getDeclaringClass().getName());
+      name = qualifiedName;
+    } else {
+      compilationUnitInfo.hppIncludes.add(typeBinding.getName());
+      compilationUnitInfo.cppIncludes.add(typeBinding.getName());
+      name = new NameInfo(simpleType.getName()).getName();
+    }
+    return f.newTypedefNameSpecifier(name);
   }
 
   private ICPPASTDeclSpecifier convertArrayType(final ArrayType arrayType) {
