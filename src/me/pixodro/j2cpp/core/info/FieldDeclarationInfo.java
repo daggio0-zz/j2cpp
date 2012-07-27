@@ -9,6 +9,7 @@ import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPNodeFactory;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 /**
@@ -57,7 +58,8 @@ public class FieldDeclarationInfo {
       final VariableDeclarationFragment fragment = (VariableDeclarationFragment) fragmentObject;
       final VariableDeclarationFragmentInfo fragmentInfo = new VariableDeclarationFragmentInfo(fragment, fieldDeclaration.getType(), compilationUnitInfo);
       fragments.put(new NameInfo(fragment.getName()).getName(), fragmentInfo.initializer);
-      if ((fragmentInfo.getDeclarator().getInitializer() == null) && !new TypeInfo(fieldDeclaration.getType(), compilationUnitInfo).isStl()) {
+      final ITypeBinding typeBinding = fieldDeclaration.getType().resolveBinding();
+      if ((fragmentInfo.getDeclarator().getInitializer() == null) && !new TypeInfo(fieldDeclaration.getType(), compilationUnitInfo).isStl() && !typeBinding.isEnum()) {
         fragmentInfo.getDeclarator().setInitializer(f.newEqualsInitializer(typeInfo.getJavaDefaultValue()));
       }
       simpleDeclaration.addDeclarator(fragmentInfo.getDeclarator());
