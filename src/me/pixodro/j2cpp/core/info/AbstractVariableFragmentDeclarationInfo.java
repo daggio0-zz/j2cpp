@@ -56,7 +56,7 @@ abstract public class AbstractVariableFragmentDeclarationInfo {
         final IASTEqualsInitializer equalsInitializer = f.newEqualsInitializer(initializer);
         declarator.setInitializer(equalsInitializer);
       }
-      if ((type.isSimpleType() || type.isParameterizedType()) && !typeBinding.isEnum() && !typeInfo.isStl()) {
+      if ((typeInfo.isSimple() || type.isParameterizedType()) && !typeBinding.isEnum() && !typeInfo.isStl()) {
         declarator.addPointerOperator(f.newPointer());
       }
     }

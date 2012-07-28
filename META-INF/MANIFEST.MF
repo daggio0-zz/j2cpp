@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Java2cpp
-Bundle-SymbolicName: java2cpp;singleton:=true
+Bundle-SymbolicName: j2cpp.core;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: me.pixodro.j2cpp.Activator
 Require-Bundle: org.eclipse.ui,
