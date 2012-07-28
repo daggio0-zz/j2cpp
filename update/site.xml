@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description name="Java To C++ Converter plug-in" url="http://tsug.github.com/j2cpp/update">
+      Java To C++ Converter plug-in
+   </description>
+   <feature url="features/j2cpp_1.0.0.jar" id="j2cpp" version="1.0.0">
+      <category name="Java To C++ Converter"/>
+   </feature>
+   <category-def name="Java To C++ Converter" label="Java To C++ Converter">
+      <description>
+         Java To C++ Converter
+      </description>
+   </category-def>
+</site>
