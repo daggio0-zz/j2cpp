@@ -1,0 +1,254 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>J2cpp by tsug</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>J2cpp</h1>
+        <p>java to c++ converter</p>
+
+        <p class="view"><a href="https://github.com/tsug/j2cpp">View the Project on GitHub <small>tsug/j2cpp</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/tsug/j2cpp/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/tsug/j2cpp/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/tsug/j2cpp">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>j2cpp</h1>
+
+<h1></h1>
+
+<p>A Java to C++ converter, as an eclipse plug-in.</p>
+
+<hr><p>This plugins converts Java to C++ 11. It relies on both JDT and CDT.</p>
+
+<hr><p>I created this plug-in because I had a Java code base that I needed to translate to C++ for portability reasons (iOS not to name it). The purpose of this plug-in was to handle the tedious work of porting Java syntax to C++ syntax.
+Note that the generated C++ code won't compile after conversion and that this converter only does the heavy lifting, you'll have of course to rework this generated code.</p>
+
+<p>Here is an example conversion:</p>
+
+<h3>BlockSituationEx.java:</h3>
+
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">java.util.HashMap</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">me.pixodro.furiousblocks.core.panel.BlockState</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">me.pixodro.furiousblocks.core.panel.BlockType</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">me.pixodro.furiousblocks.core.situations.BlockSituation</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">me.pixodro.furiousblocks.core.tools.Point</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">BlockSituationEx</span> <span class="kd">extends</span> <span class="n">BlockSituation</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="kd">final</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">Integer</span><span class="o">&gt;</span> <span class="n">targetColumnCosts</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="n">Point</span> <span class="n">origin</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">chainReplacement</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">BlockSituationEx</span><span class="o">(</span><span class="kd">final</span> <span class="n">BlockSituation</span> <span class="n">bs</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">super</span><span class="o">(</span><span class="n">bs</span><span class="o">.</span><span class="na">getId</span><span class="o">(),</span> <span class="n">bs</span><span class="o">.</span><span class="na">getType</span><span class="o">(),</span> <span class="n">bs</span><span class="o">.</span><span class="na">getState</span><span class="o">(),</span> <span class="n">bs</span><span class="o">.</span><span class="na">getStateTick</span><span class="o">(),</span> <span class="n">bs</span><span class="o">.</span><span class="na">getGarbageBlockType</span><span class="o">(),</span> <span class="n">bs</span><span class="o">.</span><span class="na">getGarbageOwner</span><span class="o">(),</span> <span class="n">bs</span><span class="o">.</span><span class="na">isCombo</span><span class="o">(),</span> <span class="n">bs</span><span class="o">.</span><span class="na">hasJustLand</span><span class="o">(),</span> <span class="n">bs</span><span class="o">.</span><span class="na">isFallingFromClearing</span><span class="o">(),</span> <span class="n">bs</span><span class="o">.</span><span class="na">getPoppingIndex</span><span class="o">());</span>
+    <span class="n">targetColumnCosts</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">Integer</span><span class="o">&gt;();</span>
+    <span class="n">chainReplacement</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="nf">BlockSituationEx</span><span class="o">(</span><span class="kd">final</span> <span class="n">BlockSituationEx</span> <span class="n">bsEx</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">super</span><span class="o">(</span><span class="n">bsEx</span><span class="o">.</span><span class="na">getId</span><span class="o">(),</span> <span class="n">bsEx</span><span class="o">.</span><span class="na">getType</span><span class="o">(),</span> <span class="n">bsEx</span><span class="o">.</span><span class="na">getState</span><span class="o">(),</span> <span class="n">bsEx</span><span class="o">.</span><span class="na">getStateTick</span><span class="o">(),</span> <span class="n">bsEx</span><span class="o">.</span><span class="na">getGarbageBlockType</span><span class="o">(),</span> <span class="n">bsEx</span><span class="o">.</span><span class="na">getGarbageOwner</span><span class="o">(),</span> <span class="n">bsEx</span><span class="o">.</span><span class="na">isCombo</span><span class="o">(),</span> <span class="n">bsEx</span><span class="o">.</span><span class="na">hasJustLand</span><span class="o">(),</span> <span class="n">bsEx</span><span class="o">.</span><span class="na">isFallingFromClearing</span><span class="o">(),</span> <span class="n">bsEx</span><span class="o">.</span><span class="na">getPoppingIndex</span><span class="o">());</span>
+    <span class="n">origin</span> <span class="o">=</span> <span class="n">bsEx</span><span class="o">.</span><span class="na">getOrigin</span><span class="o">();</span>
+    <span class="n">targetColumnCosts</span> <span class="o">=</span> <span class="n">bsEx</span><span class="o">.</span><span class="na">targetColumnCosts</span><span class="o">;</span>
+    <span class="n">chainReplacement</span> <span class="o">=</span> <span class="n">bsEx</span><span class="o">.</span><span class="na">chainReplacement</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="kd">private</span> <span class="nf">BlockSituationEx</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">super</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">BlockType</span><span class="o">.</span><span class="na">INVISIBLE</span><span class="o">,</span> <span class="n">BlockState</span><span class="o">.</span><span class="na">IDLE</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+    <span class="n">targetColumnCosts</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">Integer</span><span class="o">&gt;();</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kd">final</span> <span class="kt">int</span> <span class="nf">getTargetColumnCost</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">targetColumn</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// TODO: this is a bug, target cost should never be null</span>
+    <span class="c1">// return targetColumnCosts.get(targetColumn);</span>
+    <span class="kd">final</span> <span class="n">Integer</span> <span class="n">cost</span> <span class="o">=</span> <span class="n">targetColumnCosts</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">targetColumn</span><span class="o">);</span>
+    <span class="k">return</span> <span class="n">cost</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="n">ComboProcessor</span><span class="o">.</span><span class="na">INFINITY</span> <span class="o">:</span> <span class="n">cost</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kd">final</span> <span class="kt">void</span> <span class="nf">addTargetCost</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">targetColumn</span><span class="o">,</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">cost</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">targetColumnCosts</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">targetColumn</span><span class="o">,</span> <span class="n">cost</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">Point</span> <span class="nf">getOrigin</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">origin</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kd">final</span> <span class="kt">void</span> <span class="nf">setOrigin</span><span class="o">(</span><span class="kd">final</span> <span class="n">Point</span> <span class="n">position</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">origin</span> <span class="o">=</span> <span class="n">position</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kd">final</span> <span class="kt">void</span> <span class="nf">reset</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">origin</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="n">targetColumnCosts</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+    <span class="n">chainReplacement</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kd">static</span> <span class="n">BlockSituationEx</span> <span class="nf">newInvisibleBlock</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">BlockSituationEx</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="s">"BlockSituationEx [origin=["</span> <span class="o">+</span> <span class="o">(</span><span class="n">origin</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="s">"null"</span> <span class="o">:</span> <span class="o">(</span><span class="n">origin</span><span class="o">.</span><span class="na">x</span> <span class="o">+</span> <span class="s">":"</span> <span class="o">+</span> <span class="n">origin</span><span class="o">.</span><span class="na">y</span><span class="o">))</span> <span class="o">+</span> <span class="s">"], isChainReplacement = "</span> <span class="o">+</span> <span class="n">isChainReplacement</span><span class="o">()</span> <span class="o">+</span> <span class="s">", costs="</span> <span class="o">+</span> <span class="n">targetColumnCosts</span> <span class="o">+</span> <span class="s">"]"</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setChainReplacement</span><span class="o">(</span><span class="kd">final</span> <span class="kt">boolean</span> <span class="n">comboReplacement</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">chainReplacement</span> <span class="o">=</span> <span class="n">comboReplacement</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kd">final</span> <span class="kt">boolean</span> <span class="nf">isChainReplacement</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">chainReplacement</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kd">final</span> <span class="kt">boolean</span> <span class="nf">isReplacement</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="o">!</span><span class="n">targetColumnCosts</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+
+<p>Generated the 2 following files:</p>
+
+<h3>BlockSituationEx.h:</h3>
+
+<div class="highlight"><pre><span class="cp">#ifndef __BlockSituationEx_H_</span>
+<span class="cp">#define __BlockSituationEx_H_</span>
+
+<span class="cp">#include &lt;cstdint&gt;</span>
+<span class="cp">#include &lt;map&gt;</span>
+<span class="cp">#include "BlockSituation.h"</span>
+<span class="cp">#include "String.h"</span>
+<span class="cp">#include "BlockSituationEx.h"</span>
+<span class="cp">#include "Point.h"</span>
+
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">BlockSituationEx</span> <span class="o">:</span> <span class="n">BlockSituation</span>
+<span class="p">{</span>
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">map</span><span class="o">&lt;</span><span class="n">int32_t</span><span class="p">,</span><span class="n">int32_t</span><span class="o">&gt;</span> <span class="n">targetColumnCosts</span><span class="p">;</span>
+    <span class="n">Point</span><span class="o">*</span> <span class="n">origin</span> <span class="o">=</span> <span class="n">nullptr</span><span class="p">;</span>
+    <span class="kt">bool</span> <span class="n">chainReplacement</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="n">BlockSituationEx</span><span class="p">();</span>
+
+<span class="k">protected</span><span class="o">:</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">BlockSituationEx</span><span class="p">(</span><span class="n">BlockSituation</span><span class="o">*</span> <span class="n">bs</span><span class="p">);</span>
+    <span class="n">BlockSituationEx</span><span class="p">(</span><span class="n">BlockSituationEx</span><span class="o">*</span> <span class="n">bsEx</span><span class="p">);</span>
+    <span class="n">int32_t</span> <span class="n">getTargetColumnCost</span><span class="p">(</span><span class="n">int32_t</span> <span class="n">targetColumn</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="n">addTargetCost</span><span class="p">(</span><span class="n">int32_t</span> <span class="n">targetColumn</span><span class="p">,</span> <span class="n">int32_t</span> <span class="n">cost</span><span class="p">);</span>
+    <span class="n">Point</span><span class="o">*</span> <span class="n">getOrigin</span><span class="p">();</span>
+    <span class="kt">void</span> <span class="n">setOrigin</span><span class="p">(</span><span class="n">Point</span><span class="o">*</span> <span class="n">position</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="n">reset</span><span class="p">();</span>
+    <span class="k">static</span> <span class="n">BlockSituationEx</span><span class="o">*</span> <span class="n">newInvisibleBlock</span><span class="p">();</span>
+    <span class="kt">void</span> <span class="n">setChainReplacement</span><span class="p">(</span><span class="kt">bool</span> <span class="n">comboReplacement</span><span class="p">);</span>
+    <span class="kt">bool</span> <span class="n">isChainReplacement</span><span class="p">();</span>
+    <span class="kt">bool</span> <span class="n">isReplacement</span><span class="p">();</span>
+<span class="p">};</span>
+
+<span class="cp">#endif </span><span class="c1">//__BlockSituationEx_H_</span>
+</pre></div>
+
+<h3>BlockSituationEx.cpp:</h3>
+
+<div class="highlight"><pre><span class="cp">#include &lt;cstdint&gt;</span>
+<span class="cp">#include &lt;map&gt;</span>
+<span class="cp">#include "BlockSituation.h"</span>
+<span class="cp">#include "String.h"</span>
+<span class="cp">#include "BlockSituationEx.h"</span>
+<span class="cp">#include "Point.h"</span>
+<span class="cp">#include "BlockSituationEx.h"</span>
+
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="n">BlockSituationEx</span><span class="o">::</span><span class="n">BlockSituationEx</span><span class="p">(</span><span class="n">BlockSituation</span><span class="o">*</span> <span class="n">bs</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">targetColumnCosts</span> <span class="o">=</span> <span class="k">new</span> <span class="n">map</span><span class="o">&lt;</span><span class="n">int32_t</span><span class="p">,</span><span class="n">int32_t</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="n">chainReplacement</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">BlockSituationEx</span><span class="o">::</span><span class="n">BlockSituationEx</span><span class="p">(</span><span class="n">BlockSituationEx</span><span class="o">*</span> <span class="n">bsEx</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">origin</span> <span class="o">=</span> <span class="n">bsEx</span><span class="o">-&gt;</span><span class="n">getOrigin</span><span class="p">();</span>
+    <span class="n">targetColumnCosts</span> <span class="o">=</span> <span class="n">bsEx</span><span class="o">-&gt;</span><span class="n">targetColumnCosts</span><span class="p">;</span>
+    <span class="n">chainReplacement</span> <span class="o">=</span> <span class="n">bsEx</span><span class="o">-&gt;</span><span class="n">chainReplacement</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">BlockSituationEx</span><span class="o">::</span><span class="n">BlockSituationEx</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">targetColumnCosts</span> <span class="o">=</span> <span class="k">new</span> <span class="n">map</span><span class="o">&lt;</span><span class="n">int32_t</span><span class="p">,</span><span class="n">int32_t</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="n">int32_t</span> <span class="n">BlockSituationEx</span><span class="o">::</span><span class="n">getTargetColumnCost</span><span class="p">(</span><span class="n">int32_t</span> <span class="n">targetColumn</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">int32_t</span> <span class="n">cost</span> <span class="o">=</span> <span class="n">targetColumnCosts</span><span class="o">-&gt;</span><span class="n">get</span><span class="p">(</span><span class="n">targetColumn</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">cost</span> <span class="o">==</span> <span class="n">nullptr</span> <span class="o">?</span> <span class="n">ComboProcessor</span><span class="o">::</span><span class="n">INFINITY</span> <span class="o">:</span> <span class="n">cost</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">BlockSituationEx</span><span class="o">::</span><span class="n">addTargetCost</span><span class="p">(</span><span class="n">int32_t</span> <span class="n">targetColumn</span><span class="p">,</span> <span class="n">int32_t</span> <span class="n">cost</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">targetColumnCosts</span><span class="o">-&gt;</span><span class="n">put</span><span class="p">(</span><span class="n">targetColumn</span><span class="p">,</span> <span class="n">cost</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">Point</span><span class="o">*</span> <span class="n">BlockSituationEx</span><span class="o">::</span><span class="n">getOrigin</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">origin</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">BlockSituationEx</span><span class="o">::</span><span class="n">setOrigin</span><span class="p">(</span><span class="n">Point</span><span class="o">*</span> <span class="n">position</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">origin</span> <span class="o">=</span> <span class="n">position</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">BlockSituationEx</span><span class="o">::</span><span class="n">reset</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">origin</span> <span class="o">=</span> <span class="n">nullptr</span><span class="p">;</span>
+    <span class="n">targetColumnCosts</span><span class="o">-&gt;</span><span class="n">clear</span><span class="p">();</span>
+    <span class="n">chainReplacement</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">BlockSituationEx</span><span class="o">*</span> <span class="n">BlockSituationEx</span><span class="o">::</span><span class="n">newInvisibleBlock</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="n">BlockSituationEx</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">BlockSituationEx</span><span class="o">::</span><span class="n">setChainReplacement</span><span class="p">(</span><span class="kt">bool</span> <span class="n">comboReplacement</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">chainReplacement</span> <span class="o">=</span> <span class="n">comboReplacement</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">bool</span> <span class="n">BlockSituationEx</span><span class="o">::</span><span class="n">isChainReplacement</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">chainReplacement</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">bool</span> <span class="n">BlockSituationEx</span><span class="o">::</span><span class="n">isReplacement</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="o">!</span><span class="n">targetColumnCosts</span><span class="o">-&gt;</span><span class="n">isEmpty</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/tsug">tsug</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
