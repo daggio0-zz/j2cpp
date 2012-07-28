@@ -103,6 +103,8 @@ public class ExpressionInfo {
       expression = convertCastExpression((CastExpression) javaExpression);
     } else if (javaExpression instanceof SuperMethodInvocation) {
       expression = convertSuperMethodInvocation((SuperMethodInvocation) javaExpression);
+    } else if (javaExpression instanceof StringLiteral) {
+      expression = f.newLiteralExpression(IASTLiteralExpression.lk_string_literal, ((StringLiteral) javaExpression).getEscapedValue());
     } else if (javaExpression instanceof ArrayCreation) {
       expression = f.newIdExpression(f.newName("TODO ArrayCreation".toCharArray()));
     } else if (javaExpression instanceof ArrayInitializer) {
@@ -111,8 +113,6 @@ public class ExpressionInfo {
       expression = f.newIdExpression(f.newName("TODO Annotation".toCharArray()));
     } else if (javaExpression instanceof SuperFieldAccess) {
       expression = f.newIdExpression(f.newName("TODO SuperFieldAccess".toCharArray()));
-    } else if (javaExpression instanceof StringLiteral) {
-      expression = f.newIdExpression(f.newName("TODO StringLiteral".toCharArray()));
     } else if (javaExpression instanceof CharacterLiteral) {
       expression = f.newIdExpression(f.newName("TODO CharacterLiteral".toCharArray()));
     } else if (javaExpression instanceof TypeLiteral) {

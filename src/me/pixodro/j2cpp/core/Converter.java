@@ -23,6 +23,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IBinding;
 
 public class Converter extends ASTRequestor {
+  public static List<String> excludedImports = new ArrayList<String>();
   public static List<String> excludedJavaMethods = new ArrayList<String>();
   public static List<String> setClasses = new ArrayList<String>();
   public static List<String> listClasses = new ArrayList<String>();
@@ -30,8 +31,11 @@ public class Converter extends ASTRequestor {
   public static List<String> collectionClasses = new ArrayList<String>();
 
   static {
+    excludedImports.add(Object.class.getSimpleName());
+    excludedImports.add(StringBuilder.class.getSimpleName());
     excludedJavaMethods.add("equals");
     excludedJavaMethods.add("hashCode");
+    excludedJavaMethods.add("toString");
     setClasses.add(Set.class.getSimpleName());
     setClasses.add(HashSet.class.getSimpleName());
     setClasses.add(LinkedHashSet.class.getSimpleName());
