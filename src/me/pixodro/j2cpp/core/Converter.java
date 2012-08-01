@@ -95,14 +95,10 @@ public class Converter extends ASTRequestor {
     for (final String include : compilationUnitInfo.hppStdIncludes) {
       output.append("#include <").append(include).append(">\n");
     }
-    for (final String include : compilationUnitInfo.hppIncludes) {
-      output.append("#include \"").append(include).append(".h\"\n");
-    }
-    if (!compilationUnitInfo.hppStdIncludes.isEmpty()) {
-      output.append("\n");
-      output.append("using namespace std;\n");
-      output.append("\n");
-    }
+//    for (final String include : compilationUnitInfo.hppIncludes) {
+//      output.append("#include \"").append(include).append(".h\"\n");
+//    }
+    output.append("\n");
     output.append(writer.write(compilationUnitInfo.getHpp()));
     output.append("\n");
     output.append("#endif //__").append(compilationUnitInfo.getName()).append("_H_\n");
@@ -115,15 +111,11 @@ public class Converter extends ASTRequestor {
     for (final String include : compilationUnitInfo.cppStdIncludes) {
       output.append("#include <").append(include).append(">\n");
     }
-    for (final String include : compilationUnitInfo.cppIncludes) {
-      output.append("#include \"").append(include).append(".h\"\n");
-    }
+//    for (final String include : compilationUnitInfo.cppIncludes) {
+//      output.append("#include \"").append(include).append(".h\"\n");
+//    }
     output.append("#include \"").append(compilationUnitInfo.getName()).append(".h\"\n");
     output.append("\n");
-    if (!compilationUnitInfo.cppStdIncludes.isEmpty()) {
-      output.append("using namespace std;\n");
-      output.append("\n");
-    }
     output.append(writer.write(compilationUnitInfo.getCpp()));
     return output.toString();
   }

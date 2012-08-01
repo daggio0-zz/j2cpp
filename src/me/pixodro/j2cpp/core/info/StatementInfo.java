@@ -115,14 +115,16 @@ public class StatementInfo {
   private IASTStatement convertEnhancedForStatement(final EnhancedForStatement enhancedForStatement) {
     final ICPPASTRangeBasedForStatement rangeBased = f.newRangeBasedForStatement();
 
-    final SingleVariableDeclarationInfo parameter = new SingleVariableDeclarationInfo(enhancedForStatement.getParameter(), compilationUnitInfo);
-
+    
     final ICPPASTSimpleDeclSpecifier declSpecifier = f.newSimpleDeclSpecifier();
     declSpecifier.setStorageClass(IASTDeclSpecifier.sc_auto);
-
-    final ICPPASTDeclarator declarator = parameter.getDeclarator();
-    declarator.addPointerOperator(f.newReferenceOperator());
     final IASTSimpleDeclaration declaration = f.newSimpleDeclaration(declSpecifier);
+    
+    final SingleVariableDeclarationInfo parameter = new SingleVariableDeclarationInfo(enhancedForStatement.getParameter(), compilationUnitInfo);
+    final ICPPASTDeclarator declarator = parameter.getDeclarator();
+    for (int i = 0; i < declarator.getPointerOperators().length; i++) {
+      declarator.getPointerOperators()[i] = null;
+    }
     declaration.addDeclarator(declarator);
 
     rangeBased.setDeclaration(declaration);

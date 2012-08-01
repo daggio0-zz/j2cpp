@@ -199,17 +199,17 @@ public class TypeInfo {
       compilationUnitInfo.hppStdIncludes.add("set");
       compilationUnitInfo.cppStdIncludes.add("set");
       stl = true;
-      parameterizedTypeName = "set";
+      parameterizedTypeName = "std::set";
     } else if (Converter.listClasses.contains(parameterizedTypeName)) {
       compilationUnitInfo.hppStdIncludes.add("list");
       compilationUnitInfo.cppStdIncludes.add("list");
       stl = true;
-      parameterizedTypeName = "list";
+      parameterizedTypeName = "std::list";
     } else if (Converter.mapClasses.contains(parameterizedTypeName)) {
       compilationUnitInfo.hppStdIncludes.add("map");
       compilationUnitInfo.cppStdIncludes.add("map");
       stl = true;
-      parameterizedTypeName = "map";
+      parameterizedTypeName = "std::map";
     }
 
     final ICPPASTTemplateId templateId = f.newTemplateId(f.newName(parameterizedTypeName.toCharArray()));
