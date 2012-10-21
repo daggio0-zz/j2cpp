@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.Set;
 
 import me.pixodro.j2cpp.core.info.CompilationUnitInfo;
+import me.pixodro.j2cpp.core.rewrite.ASTWriter;
 
-import org.eclipse.cdt.internal.core.dom.rewrite.astwriter.ASTWriter;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
@@ -95,9 +95,9 @@ public class Converter extends ASTRequestor {
     for (final String include : compilationUnitInfo.hppStdIncludes) {
       output.append("#include <").append(include).append(">\n");
     }
-//    for (final String include : compilationUnitInfo.hppIncludes) {
-//      output.append("#include \"").append(include).append(".h\"\n");
-//    }
+    // for (final String include : compilationUnitInfo.hppIncludes) {
+    // output.append("#include \"").append(include).append(".h\"\n");
+    // }
     output.append("\n");
     output.append(writer.write(compilationUnitInfo.getHpp()));
     output.append("\n");
@@ -111,9 +111,9 @@ public class Converter extends ASTRequestor {
     for (final String include : compilationUnitInfo.cppStdIncludes) {
       output.append("#include <").append(include).append(">\n");
     }
-//    for (final String include : compilationUnitInfo.cppIncludes) {
-//      output.append("#include \"").append(include).append(".h\"\n");
-//    }
+    // for (final String include : compilationUnitInfo.cppIncludes) {
+    // output.append("#include \"").append(include).append(".h\"\n");
+    // }
     output.append("#include \"").append(compilationUnitInfo.getName()).append(".h\"\n");
     output.append("\n");
     output.append(writer.write(compilationUnitInfo.getCpp()));
