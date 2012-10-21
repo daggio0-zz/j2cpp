@@ -14,6 +14,7 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTExpressionList;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTRangeBasedForStatement;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTSimpleDeclSpecifier;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTUnaryExpression;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPNodeFactory;
 import org.eclipse.jdt.core.dom.AssertStatement;
 import org.eclipse.jdt.core.dom.Block;
@@ -90,16 +91,21 @@ public class StatementInfo {
       statement = convertVariableDeclarationStatement((VariableDeclarationStatement) javaStatement);
     } else if (javaStatement instanceof ConstructorInvocation) {
       statement = convertConstructorInvocation((ConstructorInvocation) javaStatement);
+    } else if (javaStatement instanceof ThrowStatement) {
+      statement = convertThrowStatement((ThrowStatement) javaStatement);
     } else if (javaStatement instanceof LabeledStatement) {
     } else if (javaStatement instanceof TypeDeclarationStatement) {
     } else if (javaStatement instanceof SuperConstructorInvocation) {
     } else if (javaStatement instanceof AssertStatement) {
     } else if (javaStatement instanceof TryStatement) {
-    } else if (javaStatement instanceof ThrowStatement) {
     } else if (javaStatement instanceof SynchronizedStatement) {
     } else {
       throw new RuntimeException("unsupported javaStatement: " + javaStatement);
     }
+  }
+
+  private IASTStatement convertThrowStatement(final ThrowStatement throwStatement) {
+    return f.newExpressionStatement(f.newUnaryExpression(ICPPASTUnaryExpression.op_throw, null));
   }
 
   private IASTStatement convertConstructorInvocation(final ConstructorInvocation constructorInvocation) {

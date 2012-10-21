@@ -16,8 +16,6 @@ import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPNodeFactory;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
-import org.eclipse.jdt.core.dom.SimpleType;
-import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 /**
@@ -135,10 +133,9 @@ public class CompilationUnitInfo {
 
   private IASTDeclaration buildTypeDeclaration(final TypeDeclarationInfo typeDeclarationInfo) {
     final ICPPASTCompositeTypeSpecifier compositeTypeSpecifier = f.newCompositeTypeSpecifier(ICPPASTCompositeTypeSpecifier.k_class, new NameInfo(typeDeclarationInfo.getName()).getName());
-    final Type baseType = typeDeclarationInfo.getTypeDeclaration().getSuperclassType();
-    if (baseType != null) {
-      final SimpleType simpleBaseType = (SimpleType) baseType;
-      compositeTypeSpecifier.addBaseSpecifier(f.newBaseSpecifier(new NameInfo(simpleBaseType.getName()).getName(), 0, false));
+    if (typeDeclarationInfo.getTypeDeclaration().getSuperclassType() != null) {
+      final TypeInfo typeInfo = new TypeInfo(typeDeclarationInfo.getTypeDeclaration().getSuperclassType(), this);
+      compositeTypeSpecifier.addBaseSpecifier(f.newBaseSpecifier(typeInfo.getName(), 0, false));
     }
 
     compositeTypeSpecifier.addDeclaration(f.newVisibilityLabel(ICPPASTVisibilityLabel.v_private));

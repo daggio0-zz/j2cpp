@@ -21,6 +21,7 @@ import org.eclipse.jdt.core.dom.PrimitiveType;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.WildcardType;
 
 /**
  * User: bquenin
@@ -32,6 +33,7 @@ public class TypeInfo {
 
   private final ICPPASTDeclSpecifier declSpecifier;
   private IASTExpression javaDefaultValue;
+  private IASTName name;
   private boolean simple;
   private boolean array;
   private boolean stl;
@@ -59,11 +61,18 @@ public class TypeInfo {
       return convertArrayType((ArrayType) javaType);
     } else if (javaType.isWildcardType()) {
       javaDefaultValue = f.newLiteralExpression(IASTLiteralExpression.lk_string_literal, "nullptr");
-      System.out.println("WildcardType = " + javaType);
+      return convertWildcardType((WildcardType) javaType);
     } else if (javaType.isQualifiedType()) {
       System.out.println("QualifiedType = " + javaType);
     }
     throw new IllegalStateException("Unsupported type " + javaType);
+  }
+
+  private ICPPASTDeclSpecifier convertWildcardType(final WildcardType wildcardType) {
+    // TODO: Determine SFINAE based on wildcard ... Let's do that later
+    name = f.newName("T".toCharArray());
+    final ICPPASTTemplateId templateId = f.newTemplateId(name);
+    return f.newTypedefNameSpecifier(templateId);
   }
 
   private ICPPASTDeclSpecifier convertPrimitiveType(final PrimitiveType primitiveType) {
@@ -167,7 +176,6 @@ public class TypeInfo {
     simple = true;
 
     final ITypeBinding typeBinding = type.resolveBinding();
-    IASTName name;
     if (typeBinding.isNested()) {
       final ICPPASTQualifiedName qualifiedName = f.newQualifiedName();
       qualifiedName.addName(f.newName(typeBinding.getDeclaringClass().getName().toCharArray()));
@@ -211,8 +219,8 @@ public class TypeInfo {
       stl = true;
       parameterizedTypeName = "std::map";
     }
-
-    final ICPPASTTemplateId templateId = f.newTemplateId(f.newName(parameterizedTypeName.toCharArray()));
+    name = f.newName(parameterizedTypeName.toCharArray());
+    final ICPPASTTemplateId templateId = f.newTemplateId(name);
     for (final Object parameterTypeObject : parameterizedType.typeArguments()) {
       final TypeInfo parameterTypeInfo = new TypeInfo((Type) parameterTypeObject, compilationUnitInfo);
       final ICPPASTDeclarator parameterDeclarator = f.newDeclarator(f.newName());
@@ -247,5 +255,9 @@ public class TypeInfo {
 
   public boolean isStl() {
     return stl;
+  }
+
+  public IASTName getName() {
+    return name;
   }
 }

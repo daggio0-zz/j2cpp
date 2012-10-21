@@ -14,6 +14,8 @@ package me.pixodro.j2cpp.core.rewrite;
 
 import java.util.List;
 
+import me.pixodro.j2cpp.core.rewrite.changegenerator.ChangeGeneratorWriterVisitor;
+
 import org.eclipse.cdt.core.dom.ast.IASTASMDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
@@ -28,7 +30,6 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamespaceDefinition;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTTemplateDeclaration;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTVisibilityLabel;
 import org.eclipse.cdt.internal.core.dom.rewrite.ASTModificationStore;
-import org.eclipse.cdt.internal.core.dom.rewrite.changegenerator.ChangeGeneratorWriterVisitor;
 import org.eclipse.cdt.internal.core.dom.rewrite.commenthandler.ASTCommenter;
 import org.eclipse.cdt.internal.core.dom.rewrite.commenthandler.NodeCommentMap;
 
@@ -206,7 +207,7 @@ public class ASTWriter {
    * expansion.
    */
   private static boolean doNodesHaveSameOffset(final IASTNode node1, final IASTNode node2) {
-    if (node1.getFileLocation() == null || node2.getFileLocation() ==null) {
+    if ((node1.getFileLocation() == null) || (node2.getFileLocation() == null)) {
       return false;
     }
     return node1.getFileLocation().getNodeOffset() == node2.getFileLocation().getNodeOffset();
