@@ -206,6 +206,9 @@ public class ASTWriter {
    * expansion.
    */
   private static boolean doNodesHaveSameOffset(final IASTNode node1, final IASTNode node2) {
+    if (node1.getFileLocation() == null || node2.getFileLocation() ==null) {
+      return false;
+    }
     return node1.getFileLocation().getNodeOffset() == node2.getFileLocation().getNodeOffset();
   }
 }
